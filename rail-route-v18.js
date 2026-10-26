@@ -341,7 +341,7 @@ const button=$('planBtn');if(!button)return;
 button.textContent='🚇 اعرض طريق المترو والتبديلات';
 button.onclick=plan; // Overrides old launcher without affecting independent station search.
 const tripArea=$('tripOut');
-tripArea.addEventListener('click',e=>{
+document.addEventListener('click',e=>{
 const click=e.target.closest?.('[data-ride], #rideStartBtn');if(!click)return;
 if(click.id==='rideStartBtn'){saveRide();renderRide();$('ridePanel')?.scrollIntoView?.({behavior:'smooth',block:'center'});return}
 const index=click.dataset?.index===undefined?-1:Number(click.dataset.index);
