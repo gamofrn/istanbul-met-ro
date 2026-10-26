@@ -398,6 +398,31 @@ window.AppNav?.status(e.message||'تعذر البحث حالياً. جرّب ا�
 button.disabled=false;button.textContent='🚇 اعرض الطريق';
 }
 }
+function renderTramCatalog(){
+const root=$('tramCatalog');if(!root)return;
+const codes=['T1','T2','T3','T4','T5','F1'];
+root.innerHTML='<h3 class="tram-cat-heading">🚊 الترام والفونيكولار</h3>'+
+'<p class="tram-cat-sub">اضغط على الخط لعرض المحطات بالترتيب، الاتجاهات وحالة الخدمة. أوقات التشغيل ليست مواعيد مباشرة.</p>'+
+codes.map(code=>{
+const info=LINE_STATUS[code],stops=(LINE_LIST[code]||'').split('|'),inactive=!info.active;
+const end=code==='T3'?'حلقة كاديكوي–مودا باتجاه واحد':stops[0]+' ↔ '+stops[stops.length-1];
+return '<details class="tram-cat-item"><summary>'+
+'<span class="tram-cat-code" style="background:'+safe(COLORS[code]||'#5d7b9d')+'">'+safe(code)+'</span>'+
+'<span class="tram-cat-name"><b>'+safe(info.title)+'</b><small>'+safe(end)+'</small></span>'+
+'<span class="tram-cat-status '+(inactive?'tram-cat-off':'tram-cat-on')+'">'+(inactive?'⚠️ تعليق':'✅ يعمل')+'</span></summary>'+
+'<div class="tram-cat-body"><p><b>🕒 الساعات:</b> '+safe(info.hours)+'</p>'+
+(inactive?'<p class="tram-cat-alert">'+safe(info.notice)+'</p>':'')+
+'<p><b>المحطات:</b> '+stops.length+' · '+(code==='T3'?'اتجاه دائري واحد':'اتجاهان من محطة النهاية إلى الأخرى')+'</p>'+
+'<ol dir="ltr" class="tram-cat-stations">'+stops.map(name=>'<li>'+safe(name)+'</li>').join('')+'</ol>'+
+'<a target="_blank" rel="noopener" href="'+safe(info.source)+'">المصدر الرسمي ↗</a>'+
+(info.alert?'<a target="_blank" rel="noopener" href="'+safe(info.alert)+'">إعلان تغيير الخدمة ↗</a>':'')+
+(info.schedule?'<a target="_blank" rel="noopener" href="'+safe(info.schedule)+'">جدول İETT ↗</a>':'')+
+'</div></details>';
+}).join('');
+}
+window.RailLineCatalog=function(){
+return Object.fromEntries(['T1','T2','T3','T4','T5','F1'].map(c=>[c,{stops:LINE_LIST[c].split('|'),...LINE_STATUS[c]}]))
+};
 function install(){
 const button=$('planBtn');if(!button)return;
 
@@ -414,7 +439,8 @@ const saved=loadRide();if(saved){rideState=saved;const resume=document.createEle
 const msg=document.createElement('p');msg.className='rail-tip';msg.textContent='يربط المحطات والتبديلات بالترتيب، ويفتح Google Maps للتحقق من أوقات الرحلة والمشي.';
 button.insertAdjacentElement('afterend',msg);
 window.addEventListener('stations-updated',()=>{networkGraph=null});
-if($('version'))$('version').textContent='الإصدار 23 · رحلة بسيطة';
+renderTramCatalog();
+if($('version'))$('version').textContent='الإصدار 25 · ترام وفونيكولار';
 }
 try{install()}catch(e){console.error('Rail planner failed',e)}
 })();
