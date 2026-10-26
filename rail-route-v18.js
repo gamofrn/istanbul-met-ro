@@ -14,22 +14,36 @@ const LINE_LIST={
 "M8":"Bostancı|Emin Ali Paşa|Ayşekadın|Kozyatağı|Küçükbakkalköy|İçerenköy|Kayışdağı|Mevlana|İMES|MODOKO-KEYAP|Dudullu|Huzur|Parseller",
 "M9":"Ataköy|Yenibosna|Çobançeşme|29 Ekim Cumhuriyet|Doğu Sanayi|Mimar Sinan|15 Temmuz|Halkalı Caddesi|Atatürk Mahallesi|Bahariye|MASKO|İkitelli Sanayi|Ziya Gökalp Mahallesi|Olimpiyat",
 "T1":"Kabataş|Fındıklı-Mimar Sinan Ü.|Tophane|Karaköy|Eminönü|Sirkeci|Gülhane|Sultanahmet|Çemberlitaş|Beyazıt-Kapalıçarşı|Laleli-İstanbul Ü.|Aksaray|Yusufpaşa|Haseki|Fındıkzade|Çapa-Şehremini|Pazartekke|Topkapı|Cevizlibağ-AÖY|Merkezefendi|Seyitnizam-Akşemsettin|Mithatpaşa|Zeytinburnu|Mehmet Akif|Merter Tekstil Merkezi|Güngören|Akıncılar|Soğanlı|Yavuzselim|Güneştepe|Bağcılar",
+"T2":"Taksim Meydan|Hüseyin Ağa Camii|Galatasaray Lisesi|Odakule|Beyoğlu Tünel",
+"T3":"Kadıköy İDO|İskele Camii|Çarşı|Altıyol|Bahariye|Kilise|Moda İlkokulu|Moda|Rızapaşa|Mühürdar|Damga Sokak",
 "T4":"Topkapı|Fetihkapı|Vatan|Edirnekapı|Şehitlik|Demirkapı|Topçular|Rami|Uluyol Bereç|Sağmalcılar|Bosna Çukurçeşme|Ali Fuat Başgil|Taşköprü|Karadeniz|Kiptaş-Venezia|Cumhuriyet Mahallesi|50.Yıl-Baştabya|Hacı Şükrü|Yenimahalle|Sultançiftliği|Cebeci|Mescid-i Selam",
 "T5":"Eminönü|Küçükpazar|Cibali|Fener|Balat|Ayvansaray|Feshane|Eyüpsultan Teleferik|Eyüpsultan Devlet Hastanesi|Silahtarağa Mahallesi|Üniversite|Alibeyköy Merkez|Alibeyköy Metro|Alibeyköy Cep Otogarı",
 "F1":"Taksim|Kabataş",
 "F4":"Boğaziçi Ü.-Hisarüstü|Aşiyan",
 "B1":"Halkalı|Mustafa Kemal|Küçükçekmece|Florya|Florya Akvaryum|Yeşilköy|Yeşilyurt|Ataköy|Bakırköy|Yenimahalle|Zeytinburnu|Kazlıçeşme|Yenikapı|Sirkeci|Üsküdar|Ayrılık Çeşmesi|Söğütlüçeşme|Feneryolu|Göztepe|Erenköy|Suadiye|Bostancı|Küçükyalı|İdealtepe|Süreyya Plajı|Maltepe|Cevizli|Atalar|Başak|Kartal|Yunus|Pendik|Kaynarca|Tersane|Güzelyalı|Aydıntepe|İçmeler|Tuzla|Çayırova|Fatih|Osmangazi|Darıca|Gebze"
 };
-const COLORS={"M1A":"#d32f2f","M1B":"#be2929","M2":"#1b9c5d","M3":"#63a6cf","M4":"#e16632","M5":"#7742a1","M6":"#9b8c21","M7":"#eb6683","M8":"#9262bd","M9":"#dfad2d","T1":"#285dcb","T4":"#eeb45f","T5":"#7c3bb6","F1":"#636a77","F4":"#438f9c","B1":"#627786"};
+const COLORS={"M1A":"#d32f2f","M1B":"#be2929","M2":"#1b9c5d","M3":"#63a6cf","M4":"#e16632","M5":"#7742a1","M6":"#9b8c21","M7":"#eb6683","M8":"#9262bd","M9":"#dfad2d","T1":"#285dcb","T2":"#c2262a","T3":"#16847b","T4":"#eeb45f","T5":"#7c3bb6","F1":"#636a77","F4":"#438f9c","B1":"#627786"};
+const LINE_STATUS={
+T1:{active:true,hours:'06:00–00:00',source:'https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T1',title:'Kabataş – Bağcılar'},
+T2:{active:false,hours:'الجدول المعتاد تقريباً 07:00–22:00، لكن الخدمة معلّقة',source:'https://iett.istanbul/Announcement/Detail/3280',schedule:'https://iett.istanbul/RouteDetail?hkod=T2&routename=taksim-tunel',title:'Taksim – Tünel (الترام التاريخي)',notice:'أعلنت İETT تعليق T2 بدءاً من 28 يونيو 2026 حتى إشعار آخر؛ لم نتحقق من عودة الخدمة. لا يُقترح ركوبه في المسارات.'},
+T3:{active:false,hours:'الجدول المعتاد: أيام العمل 06:55–21:00، السبت 08:30–21:00، الأحد 10:00–20:00',source:'https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T3',alert:'https://www.metro.istanbul/MetroIstanbulBuzPateni2024/duyuru/detay/t3-kadikoy-moda-tramvay-hattinda-sefer-duzenlemesi-250926',title:'Kadıköy – Moda (اتجاه حلقي واحد)',notice:'من 19 أكتوبر 2026 أُوقفت عربات T3 مؤقتاً للصيانة واستُبدلت بمركبات İETT الكهربائية مع مسار مختلف. محطات Kilise وModa İlkokulu وModa غير مخدومة خلال الأعمال. لا نقترح ترام T3.'},
+T4:{active:true,hours:'06:00–00:00',source:'https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T4',title:'Topkapı – Mescid-i Selam'},
+T5:{active:true,hours:'06:00–00:00',source:'https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=T5',title:'Eminönü – Alibeyköy Cep Otogarı'},
+F1:{active:true,hours:'06:00–00:00',source:'https://www.metro.istanbul/Hatlarimiz/HatDetay?hat=F1',title:'Taksim – Kabataş (فونيكولار)'}
+};
+// T3 is a single-direction clockwise loop; do not enable bidirectional edges when reopened.
 const TRANSFERS=[
 ["M2","Yenikapı","B1","Yenikapı",6],["M2","Yenikapı","M1A","Yenikapı",5],["M2","Yenikapı","M1B","Yenikapı",5],
 ["M1A","Yenikapı","B1","Yenikapı",5],["M1B","Yenikapı","B1","Yenikapı",5],
 ["M1A","Aksaray","M1B","Aksaray",3],["M1A","Otogar","M1B","Otogar",4],
 ["M2","Şişli-Mecidiyeköy","M7","Mecidiyeköy",7],["M2","Levent","M6","Levent",5],
 ["M2","Taksim","F1","Taksim",5],["F1","Kabataş","T1","Kabataş",5],
+["T2","Taksim Meydan","M2","Taksim",6],["T2","Taksim Meydan","F1","Taksim",6],
+["T2","Beyoğlu Tünel","M2","Şişhane",9],
+["T3","İskele Camii","M4","Kadıköy",7],["T3","Kadıköy İDO","M4","Kadıköy",9],
 ["M2","Haliç","T5","Küçükpazar",12],["M2","Vezneciler-İstanbul Ü.","T1","Laleli-İstanbul Ü.",13],
 ["M1A","Aksaray","T1","Aksaray",12],["M1B","Aksaray","T1","Aksaray",12],
-["M1A","Zeytinburnu","T1","Zeytinburnu",6],["M1B","Bağcılar Meydan","T1","Bağcılar",9],
+["M1A","Aksaray","T1","Yusufpaşa",7],["M1B","Aksaray","T1","Yusufpaşa",7],["M2","Yenikapı","T1","Aksaray",14],["M1A","Zeytinburnu","T1","Zeytinburnu",6],["M1B","Bağcılar Meydan","T1","Bağcılar",9],
 ["M1A","Bakırköy-İncirli","M3","İncirli",7],["M1A","Yenibosna","M9","Yenibosna",6],
 ["M1A","Topkapı-Ulubatlı","T4","Vatan",11],["M1B","Topkapı-Ulubatlı","T4","Vatan",11],
 ["M3","Kirazlı-Bağcılar","M1B","Kirazlı-Bağcılar",5],["M3","Mahmutbey","M7","Mahmutbey",5],
@@ -41,6 +55,10 @@ const TRANSFERS=[
 ["M6","Boğaziçi Ü.-Hisarüstü","F4","Boğaziçi Ü.-Hisarüstü",4]
 ];
 const FIXED={
+"taksimmeydan":[41.03692,28.98503],"beyoglutunel":[41.02750,28.97425],
+"kadikoyido":[40.9912,29.0249],"iskelecamii":[40.9917,29.0250],
+"carsi":[40.9900,29.0290],"altiyol":[40.9897,29.0290],"bahariye":[40.9878,29.0307],
+"moda":[40.9828,29.0260],"rizapasa":[40.9885,29.0240],
 "osmanbey":[41.0539,28.9874],"taksim":[41.0369,28.985],"sislimecidiyekoy":[41.0674,28.9923],
 "mecidiyekoy":[41.0674,28.9923],"yenikapi":[41.0055,28.9524],"halic":[41.0215,28.9652],
 "sishane":[41.0286,28.9743],"gayrettepe":[41.0795,29.002],"levent":[41.0827,29.0104],
@@ -87,12 +105,17 @@ return FIXED[target]||FIXED[norm(stop)]||null
 function makeGraph(){
 const nodes=new Map(),edges=new Map(),lines={};
 for(const [code,chain] of Object.entries(LINE_LIST)){
+if(LINE_STATUS[code]?.active===false)continue;
 const stops=chain.split('|');lines[code]=stops;
 for(let i=0;i<stops.length;i++){
 const id=code+':'+i;nodes.set(id,{id,line:code,stop:stops[i],i,coord:getCoord(stops[i],code)});edges.set(id,[]);
-if(i){const prev=code+':'+(i-1),weight=code==='B1'?2.5:(code[0]==='T'?2.3:2.2);
-edges.get(id).push({to:prev,cost:weight,type:'ride',line:code});
-edges.get(prev).push({to:id,cost:weight,type:'ride',line:code})}
+if(i){
+const prev=code+':'+(i-1);
+const rates={T1:2.15,T2:1.5,T3:1.8,T4:2.14,T5:2.46,F1:2.5,B1:2.5};
+const weight=rates[code]??2.2;
+edges.get(prev).push({to:id,cost:weight,type:'ride',line:code});
+if(code!=='T3')edges.get(id).push({to:prev,cost:weight,type:'ride',line:code});
+}
 }}
 function connect(lineA,nameA,lineB,nameB,minutes){
 const i=lines[lineA]?.findIndex(s=>norm(s)===norm(nameA));
