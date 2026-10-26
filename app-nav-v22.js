@@ -62,6 +62,7 @@ if(oldNearest&&active!=='nearby'){setTimeout(()=>go('nearby'),0)}
 });
 if(appBack)appBack.addEventListener('click',()=>{
 const target=active==='results'?'plan':active==='tracker'?'results':'home';
+if(history.state?.screen===active&&history.length>1){history.back();return}
 go(target)
 });
 if(appHome)appHome.addEventListener('click',()=>go('home'));
