@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
-const labels={home:'الوجهة',results:'طريقك',tracker:'متابعة الرحلة',nearby:'أقرب محطة',map:'الخريطة',hours:'ساعات التشغيل'};
+const labels={home:'الوجهة',results:'طريقك',tracker:'متابعة الرحلة',nearby:'أقرب محطة',map:'الخريطة',photo:'مساعدة بالصور',hours:'ساعات التشغيل'};
 const screens=[...document.querySelectorAll('.app-screen[data-screen]')];
 let active='home',nearbyLoaded=false;
 function available(target){
@@ -23,6 +23,7 @@ $('appTitle').textContent=labels[target];$('appBack').hidden=(target==='home');$
 relocateTracker();
 if(opt.push){history.pushState({screen:target},'',location.pathname+location.search+'#'+target)}
 if(target==='map')setTimeout(()=>window.dispatchEvent(new Event('resize')),160);
+if(target==='photo')setTimeout(()=>window.PhotoSignHelper?.refresh?.(),0);
 if(target==='nearby'&&!nearbyLoaded){nearbyLoaded=true;setTimeout(()=>{if(!$('out')?.textContent.trim())$('gpsBtn')?.click()},100)}
 window.scrollTo(0,0);
 }
@@ -46,7 +47,7 @@ if(ride){$('resumeTrip').hidden=false;setTimeout(()=>go('tracker'),0);return}
 if(e.target.closest?.('[data-ride]')){if(resumePresent()&&$('resumeTrip'))$('resumeTrip').hidden=false}
 });
 $('appBack')?.addEventListener('click',()=>{
-const to=active==='tracker'&&$('tripOut')?.textContent?.trim()?'results':'home';
+const to=(active==='tracker'||active==='photo')&&$('tripOut')?.textContent?.trim()?'results':'home';
 go(to)
 });
 $('appHome')?.addEventListener('click',()=>go('home'));
