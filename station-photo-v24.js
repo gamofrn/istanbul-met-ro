@@ -48,7 +48,7 @@ const original=String(text||'').trim(),t=normalizeForMatch(original);
 if(!original||t.length<3)return {kind:'unknown',title:'ما قدرت أقرأ اللوحة',body:'قرّب الكاميرا من اسم الخط أو الاتجاه، وتأكد إن الكتابة واضحة والإضاءة كافية.'};
 if(!leg)return {kind:'unknown',title:'قرأت نص اللوحة، لكن ما عندي مسار أقارنه',body:'خطط رحلتك أولاً، ثم ارجع واختَر الخط المطلوب. تقدر أيضاً تقرأ الكلمات المستخرجة تحت.'};
 if(!manual&&Number.isFinite(confidence)&&confidence<35)return {kind:'unknown',title:'الكتابة غير واضحة بما يكفي للحكم',body:'الصورة غير واضحة لتحليل الاتجاه بثقة. أعد التصوير أو اكتب ما تقرؤه من اللوحة يدوياً.'};
-const correct=has(t,leg.toward),opposite=has(t,leg.opposite);
+const correct=has(t,leg.toward),opposite=has(t,leg.opposite)||(leg.code==='M4'&&has(leg.toward,'Kadıköy')&&has(t,'Tavşantepe'));
 const lineWord=leg.code==='B1'?'marmaray':leg.code;
 const line=has(t,lineWord);
 const transfer=has(t,'aktarma')||has(t,'transfer')||has(t,'aktarmalar');
