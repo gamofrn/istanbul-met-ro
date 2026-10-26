@@ -322,12 +322,49 @@ body{background:#f4f7fb!important;padding:10px 12px 35px!important}
 .photo-manual button{font-size:13px;min-height:45px;margin:0}
 .photo-privacy{font-size:11px;line-height:1.85;color:#7589a1;padding:10px 4px 24px}
 @media(max-width:370px){.photo-pick-grid{grid-template-columns:1fr}.photo-action{min-height:49px}}
-</style></head><body><main><nav class="app-navbar" aria-label="التنقل"><button type="button" id="appBack" class="app-nav-back" hidden>→ رجوع</button><strong id="appTitle">الرئيسية</strong><button type="button" id="appHome" class="app-nav-home" hidden>⌂ الرئيسية</button></nav><div class="app-screen" data-screen="home" id="screen-home"><header class="hero"><span class="eyebrow">ISTANBUL · RAIL GUIDE</span><h1>🚇 دليلك في مترو إسطنبول</h1><p>اختر وجهتك، ونعرض لك المحطات والتبديلات بالترتيب.</p></header><div class="app-home-hours"><div><span>🚇 ساعات المترو</span><strong dir="ltr">06:00 – 00:00</strong></div><small>عادةً على معظم الخطوط · <button type="button" data-open-screen="hours">التفاصيل ←</button></small></div><section class="panel" id="trip" aria-label="البحث عن الطريق">
+</style><style>
+/* v25 – Tram routes, schedule details and route preferences */
+.route-preferences{border:1px solid #e4ebf6;border-radius:12px;padding:9px 11px;margin:0 0 12px;background:#f8faff}
+.route-preferences summary{font-size:12px;font-weight:750;color:#295b96;cursor:pointer;padding:3px}
+.route-preferences label{font-size:12px;color:#526b8a;display:block;margin:8px 0 5px}
+#routePreference{box-sizing:border-box;width:100%;background:#fff;border:1px solid #d7e5f3;padding:10px;border-radius:10px;color:#28486b;font:inherit;font-size:13px;min-height:44px}
+.route-preferences p{margin:9px 0 0;font-size:11px;line-height:1.6;color:#7b8da4}
+#screen-hours .tram-hour-overview{background:#eef5fc;padding:12px 14px;border:1px solid #d6e5f6;border-radius:12px;margin-top:10px}
+.tram-hour-overview strong{font-size:13px;color:#194f83}
+.tram-hour-overview p{font-size:12px;color:#4f6581;line-height:1.65;margin:5px 0}
+.tram-cat-heading{font-size:17px;color:#244b78;margin:20px 3px 7px}
+.tram-cat-sub{font-size:12px;color:#6c819e;line-height:1.7;margin:0 3px 12px}
+.tram-cat-item{background:#fff;border:1px solid #e0e9f5;border-radius:13px;margin:8px 0;overflow:hidden}
+.tram-cat-item summary{display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 11px;list-style:none}
+.tram-cat-item summary::-webkit-details-marker{display:none}
+.tram-cat-code{font-weight:850;color:#fff;border-radius:7px;padding:5px 8px;font-size:12px;white-space:nowrap;min-width:38px;text-align:center}
+.tram-cat-name{display:flex;flex-direction:column;flex:1;min-width:0;gap:4px}
+.tram-cat-name b{font-size:12px;color:#243d5e;line-height:1.5}
+.tram-cat-name small{font-size:10px;color:#8391a8;line-height:1.5}
+.tram-cat-status{font-size:10px;font-weight:750;border-radius:8px;padding:5px;white-space:nowrap}
+.tram-cat-off{background:#fff1e9;color:#a25319}.tram-cat-on{background:#e9f7ec;color:#17663a}
+.tram-cat-body{border-top:1px solid #eaf0f7;padding:12px 14px 15px}
+.tram-cat-body p{font-size:12px;line-height:1.75;color:#516781;margin:0 0 8px}
+.tram-cat-body .tram-cat-alert{background:#fff5e6;border:1px solid #ecd7a8;border-radius:9px;color:#805626;padding:10px}
+.tram-cat-stations{padding:0 0 0 23px;margin:8px 0 13px;columns:1;font-size:12px;color:#354e6b}
+.tram-cat-stations li{padding:5px 0;border-bottom:1px solid #edf2f9}
+.tram-cat-body a{font-size:12px;margin:8px 12px 0 0;display:inline-block;font-weight:700}
+@media(min-width:540px){.tram-cat-stations{columns:2}}
+</style></head><body><main><nav class="app-navbar" aria-label="التنقل"><button type="button" id="appBack" class="app-nav-back" hidden>→ رجوع</button><strong id="appTitle">الرئيسية</strong><button type="button" id="appHome" class="app-nav-home" hidden>⌂ الرئيسية</button></nav><div class="app-screen" data-screen="home" id="screen-home"><header class="hero"><span class="eyebrow">ISTANBUL · RAIL GUIDE</span><h1>🚇 دليلك في مترو إسطنبول</h1><p>اختر وجهتك، ونعرض لك المحطات والتبديلات بالترتيب.</p></header><div class="app-home-hours"><div><span>🚇 المترو ومعظم الترام + F1</span><strong dir="ltr">06:00 – 00:00</strong></div><small>T2 وT3 لديهما تغييرات خدمة حالية · <button type="button" data-open-screen="hours">تفاصيل التشغيل ←</button></small></div><section class="panel" id="trip" aria-label="البحث عن الطريق">
 <label for="toPlace" class="destination-label">وين تبي تروح؟</label>
 <input id="toPlace" type="text" placeholder="مثلاً: كاديكوي، تقسيم، السلطان أحمد" dir="auto" autocomplete="off">
 <div class="origin-preview"><span>📍 البداية: <strong id="originText">موقعك الحالي</strong></span><button type="button" id="changeOrigin" aria-expanded="false">تغيير</button></div>
 <div id="originOptions" hidden><label for="fromPlace">نقطة الانطلاق (اختياري)</label><input id="fromPlace" type="text" placeholder="اتركها فارغة لموقعك الحالي" dir="auto"><button type="button" id="swapTrip" class="swap-button">⇄ بدّل الوجهة والانطلاق</button></div>
-<button type="button" id="planBtn">🚇 اعرض الطريق</button>
+<details class="route-preferences"><summary>⚙️ طريقة اختيار المسار (اختياري)</summary>
+<label for="routePreference">وش أهم شيء عندك؟</label>
+<select id="routePreference" aria-label="تفضيل مسار الرحلة">
+<option value="balanced" selected>الأفضل إجمالاً: وقت + مشي + تبديلات</option>
+<option value="fast">أقل مدة تقديرية</option>
+<option value="fewTransfers">أقل عدد تبديلات</option>
+<option value="lessWalking">أقل مشي تقريبي</option>
+</select>
+<p>المشي محسوب بخط مستقيم والأوقات تقديرية، وليست بيانات القطارات الحية.</p>
+</details><button type="button" id="planBtn">🚇 اعرض الطريق</button>
 <p class="plan-status" id="planStatus" role="status" aria-live="polite">عند البحث سنطلب إذن الموقع لتحديد أقرب محطة.</p>
 </section>
 <section class="home-more" aria-label="أدوات أخرى"><div class="photo-home-feature">
@@ -369,8 +406,12 @@ body{background:#f4f7fb!important;padding:10px 12px 35px!important}
 <div class="hours-head"><strong>🕘 ساعات تشغيل المواصلات</strong><span>بتوقيت إسطنبول</span></div>
 <div class="hours-main"><div><span>🚇 مترو إسطنبول</span><strong dir="ltr">06:00 – 00:00</strong></div><small>معظم الخطوط · تختلف أول وآخر رحلة حسب الخط والمحطة</small></div>
 <div class="hours-marmaray"><span>🚆 Marmaray</span><span>تختلف حسب المحطة والاتجاه · <a href="https://www.tcddtasimacilik.gov.tr/marmaray/tr/neredennereye" target="_blank" rel="noopener">جدول TCDD الرسمي ↗</a></span></div>
+<div class="tram-hour-overview"><strong>🚊 ساعات الترام والفونيكولار</strong>
+<p><b>T1 وT4 وT5:</b> عادةً 06:00–00:00.</p>
+<p><b>F1 Taksim–Kabataş:</b> 06:00–00:00، والرحلة نحو دقيقتين ونصف.</p>
+<p><b>T2 وT3:</b> يوجد تعليق أو تغيير مؤقت بالخدمة. التفاصيل أسفل الصفحة.</p></div>
 <details class="night-hours"><summary>🌙 متى يشتغل المترو الليلي؟</summary><p>ليلة الجمعة والسبت (الليلتان المؤديتان إلى السبت والأحد): تعمل خطوط M1A وM1B وM2 وM4 وM5 وM6 وM7 طوال الليل عادةً، بتردد يقارب 30 دقيقة. باقي الخطوط وMarmaray لها مواعيد مختلفة.</p><a href="https://www.metro.istanbul/en/content/Gece-Metrosu" target="_blank" rel="noopener">تحقق من خدمة المترو الليلي الرسمية ↗</a></details>
-</section><p class="app-hint">الساعة الأولى والأخيرة تختلف حسب الخط والمحطة واليوم. تحقق من المصدر الرسمي قبل الرحلات المتأخرة.</p></div></main><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+</section><div id="tramCatalog"></div><p class="app-hint">هذه بيانات خطوط مجدولة، وليست حالة تشغيل لحظية. تحقق من الروابط الرسمية قبل الرحلات المتأخرة أو عند أعمال الصيانة.</p></div></main><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
 let stations=[["Şişli-Mecidiyeköy",41.0674,28.9923,"M2 / M7"],["Osmanbey",41.0539,28.9874,"M2"],["Taksim",41.0369,28.985,"M2 / F1"],["Gayrettepe",41.0795,29.002,"M2 / M11"],["Levent",41.0827,29.0104,"M2"],["4. Levent",41.0857,29.0124,"M2"],["İTÜ-Ayazağa",41.105,29.024,"M2"],["Darüşşafaka",41.1261,29.0246,"M2"],["Hacıosman",41.139,29.031,"M2"],["Vezneciler",41.0103,28.9606,"M2"],["Yenikapı",41.0055,28.9524,"M1 / M2 / Marmaray"],["Haliç",41.0215,28.9652,"M2"],["Şişhane",41.0286,28.9743,"M2"],["Kabataş",41.0332,28.9935,"T1 / F1"],["Fındıklı",41.031,28.9895,"T1"],["Tophane",41.0265,28.982,"T1"],["Karaköy",41.0222,28.9764,"T1"],["Eminönü",41.017,28.9705,"T1"],["Sirkeci",41.0144,28.9766,"T1 / Marmaray"],["Sultanahmet",41.0054,28.9768,"T1"],["Gülhane",41.0121,28.979,"T1"],["Beyazıt-Kapalıçarşı",41.0102,28.9674,"T1"],["Aksaray",41.009,28.9503,"T1"],["Laleli-Üniversite",41.011,28.9569,"T1"],["Topkapı",41.021,28.929,"T1 / T4"],["Zeytinburnu",40.994,28.904,"M1 / T1"],["Bağcılar",41.034,28.856,"M1B / T1"],["Üsküdar",41.0267,29.015,"M5 / Marmaray"],["Ayrılık Çeşmesi",40.9968,29.0435,"M4 / Marmaray"],["Kadıköy",40.9912,29.0249,"M4"],["Acıbadem",41.0027,29.0453,"M4"],["Ünalan",40.997,29.07,"M4"],["Göztepe",40.9918,29.082,"M4"],["Kozyatağı",40.9697,29.095,"M4"],["Bostancı",40.953,29.094,"M4 / Marmaray"],["Maltepe",40.924,29.132,"M4"],["Kartal",40.888,29.185,"M4"],["Sabiha Gökçen Havalimanı",40.905,29.316,"M4"],["Ümraniye",41.026,29.103,"M5"],["Çekmeköy",41.034,29.177,"M5"],["Kirazlı",41.033,28.841,"M1B / M3"],["Başakşehir-Metrokent",41.107,28.802,"M3"],["Mahmutbey",41.053,28.83,"M3 / M7"],["Kağıthane",41.082,28.97,"M7 / M11"],["Yıldız",41.049,29.009,"M7"],["Beşiktaş",41.042,29.007,"Ferry"],["Eyüpsultan",41.047,28.933,"T5"],["Alibeyköy",41.075,28.946,"T5"],["İstanbul Havalimanı",41.258,28.742,"M11"],["Bakırköy",40.98,28.872,"Marmaray"],["Halkalı",41.018,28.767,"Marmaray"],["Kazlıçeşme",40.992,28.917,"Marmaray"],["Florya",40.974,28.789,"Marmaray"],["Gebze",40.799,29.439,"Marmaray"]];
 stations.push(["Merter",41.0078,28.8868,"M1A"]);
 const q=document.getElementById('q'),out=document.getElementById('out');
@@ -468,4 +509,4 @@ if(!accept(list,false))throw Error('Station dataset invalid');
 try{localStorage.setItem(cacheKey,JSON.stringify({stations:list,t:Date.now()}))}catch(e){}
 }).catch(e=>{if(stations.length<150)announce('🟠 قائمة محطات محدودة ('+stations.length+') · يرجى تأكيد المسار في Google Maps');else announce('📦 بيانات محطات محفوظة ('+stations.length+') · قد تكون قديمة')}).finally(()=>clearTimeout(timeout));
 })();
-</script><script src="rail-route-v18.js?v=24b"></script><script src="app-nav-v23.js?v=24b"></script><script src="station-photo-v24.js?v=24b"></script></body></html>
+</script><script src="rail-route-v18.js?v=25"></script><script src="app-nav-v23.js?v=25"></script><script src="station-photo-v24.js?v=24b"></script></body></html>
