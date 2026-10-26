@@ -239,6 +239,19 @@ return html
 function renderRide(){
 const box=$('ridePanel');if(box)box.innerHTML=rideBox()
 }
+/* Read-only travel context for the station photo assistant. */
+window.RailPhotoContext=function(){
+let r=rideState&&rideState.legs?.length?rideState:loadRide();
+if(!r||!Array.isArray(r.legs)||!r.legs.length)return null;
+const legs=r.legs.map((leg,index)=>{
+const chain=(LINE_LIST[leg.code]||'').split('|');
+const begin=chain[0]||'',end=chain[chain.length-1]||'';
+const toward=String(leg.toward||'');
+const opposite=norm(toward)===norm(begin)?end:begin;
+return {code:String(leg.code),toward,opposite,from:leg.stops[0],to:leg.stops[leg.stops.length-1],index};
+});
+return {legs,selected:Math.max(0,Math.min(legs.length-1,r.leg||0)),destination:String(r.finish||''),updatedAt:r.createdAt||null};
+};
 function handleRide(action,index){
 if(action==='close'){rideState=null;saveRide();const p=$('ridePanel');if(p)p.innerHTML='';return}
 const r=rideState;if(!r)return;
