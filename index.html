@@ -103,7 +103,78 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid
 .ride-select-list button:disabled{background:#cceadd;color:#176c51}
 .ride-disclaimer{font-size:11px!important;color:#6c809b!important;line-height:1.65!important;margin:14px 0 0!important}
 @media(max-width:380px){.ride-controls button{min-width:100%}.ride-select-list{grid-template-columns:1fr}}
-</style></head><body><main><header class="hero"><span class="eyebrow">ISTANBUL · TRANSIT COMPANION</span><h1>🚇 تنقّل في إسطنبول</h1><p>من مكانك إلى وجهتك، بطريقة أسهل وأوضح</p><div id="networkStatus" class="network-status">⏳ جارٍ تجهيز بيانات المحطات...</div></header><section class="panel" id="trip"><h2>🧭 وين تبي تروح؟</h2><label for="fromPlace">من وين؟</label><input id="fromPlace" placeholder="اتركه فارغاً لموقعك الحالي" dir="auto"><div class="swapbar"><button type="button" id="swapTrip" class="swap-button">⇄ تبديل الانطلاق والوجهة</button></div><label for="toPlace">إلى وين؟</label><input id="toPlace" placeholder="اسم الوجهة بالعربي أو الإنجليزي أو إحداثيات" dir="auto"><button type="button" id="planBtn">🔎 اكتشف أفضل طريق</button><p style="font-size:13px;color:#65718a">يعرض لك مسارات النقل العام في Google Maps، مع خيار مقارنة عبر مخطط إسطنبول الرسمي. المدد والتبديلات تظهر في خدمة الملاحة وليست تقديرات من موقعنا.</p><div id="tripOut"></div></section><details class="nearby"><summary>🚉 البحث عن أقرب محطة فقط <span>اختياري</span></summary><section class="panel"><input id="q" placeholder="اسم مكان بالعربي أو الإنجليزي أو 41.05,28.98"><button type="button" id="searchBtn">🎯 ابحث عن مترو قرب الوجهة</button><small>اكتب اسم وجهتك مثل Nişantaşı أو الصق إحداثياتها. يمكنك أيضاً تحديد الوجهة بالضغط مطولاً على الخريطة.</small><button type="button" class="secondary" id="gpsBtn">📍 استخدم موقعي الحالي</button><small>روابط Google Maps المختصرة قد لا تعمل مباشرة. افتحها في Google Maps وانسخ اسم المكان أو الإحداثيات.</small></section><p id="version" style="text-align:center;color:#2762a6;font-size:13px">الإصدار 20 · متابعة الرحلة</p><div id="out"></div></details><section class="mapbox"><h2>🗺️ خريطة المحطات</h2><p class="mapnote">مرجع تفاعلي للمحطات. بعد حساب رحلة سيظهر تسلسل المحطات على شكل خط متقطع تقريبي، وليس مسار السكة الحقيقي. اضغط على الخريطة لاختيار وجهتك.</p><div id="map"></div><p class="mapnote">الخرائط © OpenStreetMap. عند تعذر تحميل بيانات الشبكة، تظهر قائمة احتياطية محدودة.</p></section><p><small>تُحمّل بيانات المحطات التشغيلية من مصدر GIS عند توفره، مع تخزين نسخة احتياطية على جهازك؛ وقد لا تعكس أحدث التغييرات. المسافات بخط مستقيم وليست مسار مشي فعلي. افتح خرائط Google للتأكد من الطريق ووقت المشي.</small></p></main><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
+</style><style>
+/* v21 — clarity-first layout */
+body{background:#f3f6fb}
+.hero{margin-bottom:10px;padding:20px 18px 17px;border-radius:20px}
+.hero h1{font-size:23px;margin:4px 0}
+.hero .network-status{font-size:10px;padding:6px 9px;margin-top:9px}
+.service-hours{background:#fff;border:1px solid #e1e8f3;border-radius:17px;padding:14px 15px;margin:11px 0 14px;box-shadow:0 3px 14px #1b35550b}
+.hours-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.hours-head strong{font-size:15px;color:#253e62}.hours-head span{font-size:10px;color:#7a8da5}
+.hours-main{background:#eef5ff;border-radius:12px;padding:12px}
+.hours-main div{display:flex;justify-content:space-between;gap:9px;align-items:center}
+.hours-main div span{color:#254c7d;font-size:13px;font-weight:750}
+.hours-main div strong{font-size:17px;font-variant-numeric:tabular-nums;color:#123f7b;white-space:nowrap}
+.hours-main small{display:block;font-size:11px;color:#657c9d;line-height:1.6;margin-top:5px}
+.hours-marmaray{display:flex;align-items:start;gap:10px;justify-content:space-between;margin:12px 2px;color:#4d5e76;font-size:11px;line-height:1.7}
+.hours-marmaray>span:first-child{white-space:nowrap;font-weight:750;color:#344b64;font-size:12px}
+.hours-marmaray a{font-weight:700}
+.night-hours{border-top:1px solid #e9eef7;padding-top:10px}
+.night-hours summary{cursor:pointer;color:#1f589b;font-size:12px;font-weight:750}
+.night-hours p{font-size:12px;line-height:1.8;color:#50637d;margin:9px 0}
+.night-hours>a{font-size:12px;font-weight:750;display:inline-block;margin-bottom:4px}
+#trip{padding:15px 15px 17px}
+#trip h2{font-size:19px;margin:2px 0 8px}
+#trip label{margin-top:8px}#trip input{margin:4px 0 8px;padding:11px 13px;min-height:47px}
+#trip>p.rail-tip{margin:9px 0}#trip .rail-geo{margin:0 0 3px!important}
+#tripOut{margin-top:8px}
+.rail-result-clean{background:transparent;border:0;padding:0;margin:9px 0}
+.rail-overview{border-radius:15px;padding:14px 13px;background:linear-gradient(120deg,#163b72,#155e9b);color:#fff}
+.rail-eyebrow{display:block;font-size:11px;color:#b4d5fc;margin-bottom:6px}
+.rail-overview h3{font-size:17px;line-height:1.6;margin:0;color:white;overflow-wrap:anywhere}
+.rail-overview h3 span{color:#aacff0}
+.rail-overview-stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.rail-overview-stats span{background:#ffffff25;border-radius:8px;font-size:11px;font-weight:650;padding:7px 9px}
+.rail-walk{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px;background:#f3f7fc;border:1px solid #e2e9f4;border-radius:12px;padding:12px;margin:10px 0;color:#304c70;font-size:12px;line-height:1.75}
+.rail-walk>span:first-child{font-weight:750}
+.rail-walk a{font-size:12px;font-weight:700}
+.rail-guide{display:grid;gap:8px;margin:10px 0}
+.rail-leg{background:white;border:1px solid #dce6f4;padding:13px 12px;border-radius:14px;box-shadow:0 2px 8px #11274408}
+.rail-leg-top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.rail-leg-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rail-leg-line strong{font-size:14px;color:#273c5a}
+.rail-leg-count{font-size:11px;color:#657a95;background:#eff3f9;border-radius:8px;padding:6px 8px;white-space:nowrap}
+.rail-direction{font-size:12px;color:#5b6e89;margin:10px 0 9px}.rail-direction b{color:#1c4f86;font-size:14px}
+.rail-stops-compact{border-top:1px solid #edf1f7;border-bottom:1px solid #edf1f7;padding:9px 0;display:grid;gap:11px}
+.rail-stops-compact>div{display:flex;align-items:center;gap:8px;font-size:13px;color:#3e4e63}
+.rail-stops-compact b{color:#1f3754}
+.rail-dot{width:9px;height:9px;border-radius:100%;display:inline-block;flex-shrink:0}
+.rail-dot.green{background:#1da76a}.rail-dot.red{background:#e45a5e}
+.rail-station-details{border-top:0;margin-top:3px;padding-top:0}
+.rail-station-details summary{font-size:12px;padding:10px 2px 3px;color:#3365a3}
+.rail-station-list li{min-height:35px;padding:5px 10px 5px 0;font-size:12px}
+.rail-change{display:flex;align-items:center;gap:9px;background:#fff6e6;border:1px solid #eed8ad;border-radius:12px;padding:12px;font-size:12px;color:#6b522a}
+.rail-change-symbol{font-size:22px}
+.rail-change>div{flex:1}
+.rail-change strong{display:block;font-size:13px;line-height:1.8}
+.rail-change small{display:block;font-size:11px;line-height:1.7;color:#7e6541}
+.rail-end-walk{background:#eaf8f0;border-color:#cce9d8}
+.ride-start{background:#f0f6fe;border-color:#cfdef1;padding:12px;margin:12px 0}
+.ride-start>button{min-height:48px!important}
+.rail-safety{border-top:1px solid #e2eaf5;margin:12px 0 0;padding:12px 4px;color:#607189}
+.rail-safety summary{font-size:11px;cursor:pointer}
+.rail-safety p{font-size:11px;line-height:1.8;color:#657892}
+.rail-result-clean .rail-station-details summary::before{content:'+';float:left;font-size:15px;color:#5777a0}
+.rail-result-clean .rail-station-details[open] summary::before{content:'−'}
+#tripOut .rail-journey-head,#tripOut .rail-kpis{display:none}
+@media(max-width:420px){.hours-main div strong{font-size:15px}.rail-overview h3{font-size:16px}}
+</style></head><body><main><header class="hero"><span class="eyebrow">ISTANBUL · TRANSIT COMPANION</span><h1>🚇 تنقّل في إسطنبول</h1><p>من مكانك إلى وجهتك، بطريقة أسهل وأوضح</p><div id="networkStatus" class="network-status">⏳ جارٍ تجهيز بيانات المحطات...</div></header><section class="service-hours" aria-label="ساعات تشغيل النقل بالسكك">
+<div class="hours-head"><strong>🕘 ساعات تشغيل المواصلات</strong><span>بتوقيت إسطنبول</span></div>
+<div class="hours-main"><div><span>🚇 مترو إسطنبول</span><strong dir="ltr">06:00 – 00:00</strong></div><small>معظم الخطوط · تختلف أول وآخر رحلة حسب الخط والمحطة</small></div>
+<div class="hours-marmaray"><span>🚆 Marmaray</span><span>تختلف حسب المحطة والاتجاه · <a href="https://www.tcddtasimacilik.gov.tr/marmaray/tr/neredennereye" target="_blank" rel="noopener">جدول TCDD الرسمي ↗</a></span></div>
+<details class="night-hours"><summary>🌙 متى يشتغل المترو الليلي؟</summary><p>ليلة الجمعة والسبت (الليلتان المؤديتان إلى السبت والأحد): تعمل خطوط M1A وM1B وM2 وM4 وM5 وM6 وM7 طوال الليل عادةً، بتردد يقارب 30 دقيقة. باقي الخطوط وMarmaray لها مواعيد مختلفة.</p><a href="https://www.metro.istanbul/en/content/Gece-Metrosu" target="_blank" rel="noopener">تحقق من خدمة المترو الليلي الرسمية ↗</a></details>
+</section><section class="panel" id="trip"><h2>🧭 وين تبي تروح؟</h2><label for="fromPlace">من وين؟</label><input id="fromPlace" placeholder="اتركه فارغاً لموقعك الحالي" dir="auto"><div class="swapbar"><button type="button" id="swapTrip" class="swap-button">⇄ تبديل الانطلاق والوجهة</button></div><label for="toPlace">إلى وين؟</label><input id="toPlace" placeholder="اسم الوجهة بالعربي أو الإنجليزي أو إحداثيات" dir="auto"><button type="button" id="planBtn">🔎 اكتشف أفضل طريق</button><p style="font-size:13px;color:#65718a">اختر وجهتك ليظهر خط الركوب والاتجاه والتبديلات؛ افتح المحطات الوسيطة فقط عند الحاجة.</p><div id="tripOut"></div></section><details class="nearby"><summary>🚉 البحث عن أقرب محطة فقط <span>اختياري</span></summary><section class="panel"><input id="q" placeholder="اسم مكان بالعربي أو الإنجليزي أو 41.05,28.98"><button type="button" id="searchBtn">🎯 ابحث عن مترو قرب الوجهة</button><small>اكتب اسم وجهتك مثل Nişantaşı أو الصق إحداثياتها. يمكنك أيضاً تحديد الوجهة بالضغط مطولاً على الخريطة.</small><button type="button" class="secondary" id="gpsBtn">📍 استخدم موقعي الحالي</button><small>روابط Google Maps المختصرة قد لا تعمل مباشرة. افتحها في Google Maps وانسخ اسم المكان أو الإحداثيات.</small></section><p id="version" style="text-align:center;color:#2762a6;font-size:13px">الإصدار 21 · تصميم مبسّط</p><div id="out"></div></details><section class="mapbox"><h2>🗺️ خريطة المحطات</h2><p class="mapnote">مرجع تفاعلي للمحطات. بعد حساب رحلة سيظهر تسلسل المحطات على شكل خط متقطع تقريبي، وليس مسار السكة الحقيقي. اضغط على الخريطة لاختيار وجهتك.</p><div id="map"></div><p class="mapnote">الخرائط © OpenStreetMap. عند تعذر تحميل بيانات الشبكة، تظهر قائمة احتياطية محدودة.</p></section><p><small>تُحمّل بيانات المحطات التشغيلية من مصدر GIS عند توفره، مع تخزين نسخة احتياطية على جهازك؛ وقد لا تعكس أحدث التغييرات. المسافات بخط مستقيم وليست مسار مشي فعلي. افتح خرائط Google للتأكد من الطريق ووقت المشي.</small></p></main><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script>
 let stations=[["Şişli-Mecidiyeköy",41.0674,28.9923,"M2 / M7"],["Osmanbey",41.0539,28.9874,"M2"],["Taksim",41.0369,28.985,"M2 / F1"],["Gayrettepe",41.0795,29.002,"M2 / M11"],["Levent",41.0827,29.0104,"M2"],["4. Levent",41.0857,29.0124,"M2"],["İTÜ-Ayazağa",41.105,29.024,"M2"],["Darüşşafaka",41.1261,29.0246,"M2"],["Hacıosman",41.139,29.031,"M2"],["Vezneciler",41.0103,28.9606,"M2"],["Yenikapı",41.0055,28.9524,"M1 / M2 / Marmaray"],["Haliç",41.0215,28.9652,"M2"],["Şişhane",41.0286,28.9743,"M2"],["Kabataş",41.0332,28.9935,"T1 / F1"],["Fındıklı",41.031,28.9895,"T1"],["Tophane",41.0265,28.982,"T1"],["Karaköy",41.0222,28.9764,"T1"],["Eminönü",41.017,28.9705,"T1"],["Sirkeci",41.0144,28.9766,"T1 / Marmaray"],["Sultanahmet",41.0054,28.9768,"T1"],["Gülhane",41.0121,28.979,"T1"],["Beyazıt-Kapalıçarşı",41.0102,28.9674,"T1"],["Aksaray",41.009,28.9503,"T1"],["Laleli-Üniversite",41.011,28.9569,"T1"],["Topkapı",41.021,28.929,"T1 / T4"],["Zeytinburnu",40.994,28.904,"M1 / T1"],["Bağcılar",41.034,28.856,"M1B / T1"],["Üsküdar",41.0267,29.015,"M5 / Marmaray"],["Ayrılık Çeşmesi",40.9968,29.0435,"M4 / Marmaray"],["Kadıköy",40.9912,29.0249,"M4"],["Acıbadem",41.0027,29.0453,"M4"],["Ünalan",40.997,29.07,"M4"],["Göztepe",40.9918,29.082,"M4"],["Kozyatağı",40.9697,29.095,"M4"],["Bostancı",40.953,29.094,"M4 / Marmaray"],["Maltepe",40.924,29.132,"M4"],["Kartal",40.888,29.185,"M4"],["Sabiha Gökçen Havalimanı",40.905,29.316,"M4"],["Ümraniye",41.026,29.103,"M5"],["Çekmeköy",41.034,29.177,"M5"],["Kirazlı",41.033,28.841,"M1B / M3"],["Başakşehir-Metrokent",41.107,28.802,"M3"],["Mahmutbey",41.053,28.83,"M3 / M7"],["Kağıthane",41.082,28.97,"M7 / M11"],["Yıldız",41.049,29.009,"M7"],["Beşiktaş",41.042,29.007,"Ferry"],["Eyüpsultan",41.047,28.933,"T5"],["Alibeyköy",41.075,28.946,"T5"],["İstanbul Havalimanı",41.258,28.742,"M11"],["Bakırköy",40.98,28.872,"Marmaray"],["Halkalı",41.018,28.767,"Marmaray"],["Kazlıçeşme",40.992,28.917,"Marmaray"],["Florya",40.974,28.789,"Marmaray"],["Gebze",40.799,29.439,"Marmaray"]];
 stations.push(["Merter",41.0078,28.8868,"M1A"]);
 const q=document.getElementById('q'),out=document.getElementById('out');
@@ -201,4 +272,4 @@ if(!accept(list,false))throw Error('Station dataset invalid');
 try{localStorage.setItem(cacheKey,JSON.stringify({stations:list,t:Date.now()}))}catch(e){}
 }).catch(e=>{if(stations.length<150)announce('🟠 قائمة محطات محدودة ('+stations.length+') · يرجى تأكيد المسار في Google Maps');else announce('📦 بيانات محطات محفوظة ('+stations.length+') · قد تكون قديمة')}).finally(()=>clearTimeout(timeout));
 })();
-</script><script src="rail-route-v18.js?v=20"></script></body></html>
+</script><script src="rail-route-v18.js?v=21"></script></body></html>
