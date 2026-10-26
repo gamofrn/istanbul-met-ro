@@ -169,6 +169,13 @@ body{background:#f3f6fb}
 .rail-result-clean .rail-station-details[open] summary::before{content:'−'}
 #tripOut .rail-journey-head,#tripOut .rail-kpis{display:none}
 @media(max-width:420px){.hours-main div strong{font-size:15px}.rail-overview h3{font-size:16px}}
+</style><style>
+#tripOut .rail-walk a,#tripOut .rail-nearest a,#tripOut .rail-change a,#tripOut .rail-station-details a{padding:0!important;display:inline!important;border-radius:0!important}
+#tripOut .rail-links a{padding:12px!important;display:block!important}
+#tripOut .rail-result-clean{padding:0!important}
+#tripOut .rail-leg{padding:13px 12px!important}
+#tripOut .rail-change{padding:12px!important}
+#tripOut .rail-guide{gap:8px}
 </style></head><body><main><header class="hero"><span class="eyebrow">ISTANBUL · TRANSIT COMPANION</span><h1>🚇 تنقّل في إسطنبول</h1><p>من مكانك إلى وجهتك، بطريقة أسهل وأوضح</p><div id="networkStatus" class="network-status">⏳ جارٍ تجهيز بيانات المحطات...</div></header><section class="service-hours" aria-label="ساعات تشغيل النقل بالسكك">
 <div class="hours-head"><strong>🕘 ساعات تشغيل المواصلات</strong><span>بتوقيت إسطنبول</span></div>
 <div class="hours-main"><div><span>🚇 مترو إسطنبول</span><strong dir="ltr">06:00 – 00:00</strong></div><small>معظم الخطوط · تختلف أول وآخر رحلة حسب الخط والمحطة</small></div>
@@ -272,4 +279,4 @@ if(!accept(list,false))throw Error('Station dataset invalid');
 try{localStorage.setItem(cacheKey,JSON.stringify({stations:list,t:Date.now()}))}catch(e){}
 }).catch(e=>{if(stations.length<150)announce('🟠 قائمة محطات محدودة ('+stations.length+') · يرجى تأكيد المسار في Google Maps');else announce('📦 بيانات محطات محفوظة ('+stations.length+') · قد تكون قديمة')}).finally(()=>clearTimeout(timeout));
 })();
-</script><script src="rail-route-v18.js?v=21"></script></body></html>
+</script><script src="rail-route-v18.js?v=21b"></script></body></html>
