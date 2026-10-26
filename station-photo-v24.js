@@ -20,7 +20,7 @@ select.replaceChildren();select.disabled=true;
 tip.innerHTML='<strong>ما عندك رحلة محددة حالياً</strong><p>تقدر تصور لوحة ونقرأ النص، لكن عشان نقول لك هل اتجاهها يناسبك، خطط رحلة أولاً ثم ارجع هنا.</p><button type="button" data-goto="home">🧭 خطط رحلة أولاً</button>';
 return;
 }
-const current=Number(select.value),selected=Number.isInteger(current)&&current>=0&&current<context.legs.length?current:context.selected;
+const current=select.value===''?NaN:Number(select.value),selected=Number.isInteger(current)&&current>=0&&current<context.legs.length?current:context.selected;
 select.replaceChildren();
 for(const l of context.legs){
 const option=document.createElement('option');option.value=String(l.index);
