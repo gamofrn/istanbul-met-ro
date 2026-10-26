@@ -227,17 +227,67 @@ main{max-width:630px!important}
 #screen-tracker #ridePanel>.ride-tracker{margin-top:13px}
 #screen-tracker #trackerSlot:empty:before{content:'ابدأ تخطيط رحلة أولاً لعرض وضع المتابعة.';display:block;background:#fff;padding:17px;border-radius:13px;color:#78899b;font-size:14px}
 @media(max-width:350px){.app-tile{padding:11px!important}.app-tile-label strong{font-size:14px}.app-tile-grid .app-tile-label strong{font-size:13px}}
-</style></head><body><main><nav class="app-navbar" aria-label="التنقل"><button type="button" id="appBack" class="app-nav-back" hidden>→ رجوع</button><strong id="appTitle">الرئيسية</strong><button type="button" id="appHome" class="app-nav-home" hidden>⌂ الرئيسية</button></nav><div class="app-screen" data-screen="home" id="screen-home"><header class="hero"><span class="eyebrow">ISTANBUL · TRANSIT COMPANION</span><h1>🚇 تنقّل في إسطنبول</h1><p>من مكانك إلى وجهتك، بطريقة أسهل وأوضح</p><div id="networkStatus" class="network-status">⏳ جارٍ تجهيز بيانات المحطات...</div></header><div class="app-home-hours"><div><span>🚇 ساعات المترو</span><strong dir="ltr">06:00 – 00:00</strong></div><small>عادةً على معظم الخطوط · <button type="button" data-open-screen="hours">التفاصيل ←</button></small></div>
-<section class="app-menu" aria-label="اختر خدمة">
-  <p class="app-menu-label">كيف أقدر أساعدك؟</p>
-  <button type="button" class="app-tile app-tile-primary" data-open-screen="plan"><span class="app-tile-emoji">🧭</span><span class="app-tile-label"><strong>خطط رحلة</strong><small>من موقعك إلى وجهتك، مع تفاصيل التبديل</small></span><span class="app-chevron">‹</span></button>
-  <div class="app-tile-grid">
-    <button type="button" class="app-tile" data-open-screen="nearby"><span class="app-tile-emoji">📍</span><span class="app-tile-label"><strong>أقرب محطة</strong><small>حسب موقعي</small></span></button>
-    <button type="button" class="app-tile" data-open-screen="map"><span class="app-tile-emoji">🗺️</span><span class="app-tile-label"><strong>خريطة الشبكة</strong><small>المحطات والخطوط</small></span></button>
-  </div>
-  <button type="button" class="app-tile app-tile-muted" data-open-screen="hours"><span class="app-tile-emoji">🕒</span><span class="app-tile-label"><strong>ساعات التشغيل</strong><small>المترو والمترو الليلي وMarmaray</small></span><span class="app-chevron">‹</span></button>
-  <button type="button" class="app-tile app-tile-muted" data-open-screen="tracker" id="resumeTrip" hidden><span class="app-tile-emoji">🚆</span><span class="app-tile-label"><strong>استكمال رحلتي المحفوظة</strong><small>ارجع لمتابعة المحطات</small></span><span class="app-chevron">‹</span></button>
-</section></div><div class="app-screen" data-screen="plan" id="screen-plan"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>حدد مسارك</h2></div><section class="panel" id="trip"><h2>🧭 وين تبي تروح؟</h2><label for="fromPlace">من وين؟</label><input id="fromPlace" placeholder="اتركه فارغاً لموقعك الحالي" dir="auto"><div class="swapbar"><button type="button" id="swapTrip" class="swap-button">⇄ تبديل الانطلاق والوجهة</button></div><label for="toPlace">إلى وين؟</label><input id="toPlace" placeholder="اسم الوجهة بالعربي أو الإنجليزي أو إحداثيات" dir="auto"><button type="button" id="planBtn">🔎 اكتشف أفضل طريق</button><p style="font-size:13px;color:#65718a">اختر وجهتك ليظهر خط الركوب والاتجاه والتبديلات؛ افتح المحطات الوسيطة فقط عند الحاجة.</p></section></div><div class="app-screen" data-screen="results" id="screen-results"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>تفاصيل رحلتك</h2></div><button class="app-subtle-action" type="button" data-goto="plan">✎ تعديل نقطة الانطلاق أو الوجهة</button><div id="tripOut"></div></div><div class="app-screen" data-screen="nearby" id="screen-nearby"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>ابحث عن محطة قريبة</h2></div><details class="nearby" open><summary>🚉 البحث عن أقرب محطة فقط <span>اختياري</span></summary><section class="panel"><input id="q" placeholder="اسم مكان بالعربي أو الإنجليزي أو 41.05,28.98"><button type="button" id="searchBtn">🎯 ابحث عن مترو قرب الوجهة</button><small>اكتب اسم وجهتك مثل Nişantaşı أو الصق إحداثياتها. يمكنك أيضاً تحديد الوجهة بالضغط مطولاً على الخريطة.</small><button type="button" class="secondary" id="gpsBtn">📍 استخدم موقعي الحالي</button><small>روابط Google Maps المختصرة قد لا تعمل مباشرة. افتحها في Google Maps وانسخ اسم المكان أو الإحداثيات.</small></section><p id="version" style="text-align:center;color:#2762a6;font-size:13px">الإصدار 22 · واجهة صفحات</p><div id="out"></div></details></div><div class="app-screen" data-screen="map" id="screen-map"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>خريطة السكك والمحطات</h2></div><section class="mapbox"><h2>🗺️ خريطة المحطات</h2><p class="mapnote">مرجع تفاعلي للمحطات. بعد حساب رحلة سيظهر تسلسل المحطات على شكل خط متقطع تقريبي، وليس مسار السكة الحقيقي. اضغط على الخريطة لاختيار وجهتك.</p><div id="map"></div><p class="mapnote">الخرائط © OpenStreetMap. عند تعذر تحميل بيانات الشبكة، تظهر قائمة احتياطية محدودة.</p></section><p><small>تُحمّل بيانات المحطات التشغيلية من مصدر GIS عند توفره، مع تخزين نسخة احتياطية على جهازك؛ وقد لا تعكس أحدث التغييرات. المسافات بخط مستقيم وليست مسار مشي فعلي. افتح خرائط Google للتأكد من الطريق ووقت المشي.</small></p></div><div class="app-screen" data-screen="tracker" id="screen-tracker"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>متابعة الرحلة</h2></div><div class="app-hint">حدّث محطتك يدوياً عند التوقف في كل محطة، ولا تعتمد على GPS داخل الأنفاق.</div><div id="trackerSlot"></div><button class="app-subtle-action" type="button" data-goto="results">↩ العودة إلى تفاصيل المسار</button></div><div class="app-screen" data-screen="hours" id="screen-hours"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>متى تعمل المواصلات؟</h2></div><section class="service-hours" aria-label="ساعات تشغيل النقل بالسكك">
+</style><style>
+/* v23 — First-time-user experience: destination first, secondary tools out of the way. */
+body{background:#f4f7fb!important;padding:10px 12px 35px!important}
+.hero{padding:17px 18px!important;border-radius:18px!important;margin:0 0 9px!important;box-shadow:none!important}
+.hero h1{font-size:22px!important;margin:4px 0 6px!important}
+.hero p{font-size:12px!important;line-height:1.6!important}
+.hero .eyebrow{font-size:9px!important;opacity:.85}
+.hero .network-status{font-size:10px!important;background:#ffffff1c!important;padding:5px 8px!important;margin-top:10px!important;max-width:100%}
+.app-home-hours{margin:0 0 11px!important;padding:10px 12px!important;box-shadow:none!important}
+.app-home-hours strong{font-size:14px!important}
+.app-home-hours span{font-size:12px!important}
+.app-home-hours small{margin-top:3px!important}
+#trip{padding:16px!important;margin:0!important;border:1px solid #dce7f4!important;box-shadow:0 8px 25px #1f3b6310!important;border-radius:18px!important}
+#trip .destination-label{font-size:20px!important;color:#153b69!important;font-weight:850!important;display:block!important;margin:0 0 12px!important}
+#trip #toPlace{font-size:16px!important;border:1px solid #c5d8ed!important;border-radius:13px!important;background:#fff!important;padding:14px!important;min-height:53px!important;margin:0 0 12px!important;box-shadow:0 0 0 3px #eaf2fc}
+#trip .origin-preview{border-radius:11px;background:#eef4fd;display:flex;align-items:center;justify-content:space-between;gap:7px;padding:9px 12px;margin:0 0 12px;color:#3b597d;font-size:12px}
+#trip .origin-preview strong{color:#164e8b;font-weight:800}
+#trip #changeOrigin{width:auto!important;min-height:30px!important;padding:5px 10px!important;background:#fff!important;color:#1c60a7!important;border:1px solid #cbdcf0!important;font-size:11px!important;margin:0!important;flex-shrink:0}
+#trip #originOptions{background:#f8faff;padding:10px;border:1px solid #e0e9f6;border-radius:11px;margin:0 0 12px}
+#trip #originOptions input{margin:5px 0!important;padding:11px!important}
+#trip #originOptions .swap-button{width:100%!important;min-height:38px!important;margin:5px 0!important}
+#trip #planBtn{font-size:17px!important;min-height:54px!important;border-radius:12px!important;margin:0!important;background:#166ad1!important;box-shadow:0 4px 12px #165fc42c!important}
+#trip #planBtn:disabled{opacity:.7;cursor:wait}
+#trip .plan-status{font-size:11px!important;margin:9px 2px 0!important;color:#687d9a!important;line-height:1.6!important}
+#trip .plan-status.error{font-size:12px!important;color:#ad3a2f!important;font-weight:700;background:#fff0ed;padding:9px 11px;border-radius:9px}
+.home-more{margin:17px 0 8px}
+.home-more h2{font-size:14px;color:#546983;font-weight:750;margin:4px 3px 12px}
+.home-tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.home-tool{background:#fff!important;border:1px solid #e0e9f4!important;box-shadow:none!important;min-height:96px!important;border-radius:14px!important;padding:10px 7px!important;margin:0!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#1e4b79!important;text-align:center!important}
+.home-tool span{font-size:24px}.home-tool b{font-size:12px}.home-tool small{font-size:10px;color:#7c8da5;line-height:1.5}
+.home-resume{background:#e8f2ff!important;color:#195593!important;border:1px solid #c7def8!important;border-radius:13px!important;font-size:13px!important;margin:13px 0 0!important;text-align:right!important;min-height:48px!important}
+.home-resume span{float:left}
+#screen-results .app-page-head{margin-bottom:10px}
+#screen-results .app-subtle-action{margin:0 0 8px!important;border-radius:10px!important;padding:8px!important;min-height:36px!important}
+#screen-results #tripOut{margin-top:0!important}
+.simple-nearby{background:#fff;border-radius:17px;border:1px solid #dce8f6;padding:14px}
+.simple-nearby .locate-main{font-size:15px!important;margin:0 0 12px!important}
+.simple-nearby details{border-top:1px solid #e3edf6;padding-top:10px}
+.simple-nearby summary{font-size:12px;color:#25609d;font-weight:700;cursor:pointer;padding:6px 0}
+.simple-nearby .nearby-other{padding:7px 0}
+.simple-nearby #out{margin-top:10px}
+#screen-nearby .simple-nearby .item{margin:7px 0!important}
+#screen-hours .service-hours{margin:0!important}
+@media(max-width:360px){.home-tool b{font-size:11px}.home-tool{padding:8px 3px!important}}
+</style></head><body><main><nav class="app-navbar" aria-label="التنقل"><button type="button" id="appBack" class="app-nav-back" hidden>→ رجوع</button><strong id="appTitle">الرئيسية</strong><button type="button" id="appHome" class="app-nav-home" hidden>⌂ الرئيسية</button></nav><div class="app-screen" data-screen="home" id="screen-home"><header class="hero"><span class="eyebrow">ISTANBUL · RAIL GUIDE</span><h1>🚇 دليلك في مترو إسطنبول</h1><p>اختر وجهتك، ونعرض لك المحطات والتبديلات بالترتيب.</p><div id="networkStatus" class="network-status">⏳ جارٍ تجهيز بيانات المحطات...</div></header><div class="app-home-hours"><div><span>🚇 ساعات المترو</span><strong dir="ltr">06:00 – 00:00</strong></div><small>عادةً على معظم الخطوط · <button type="button" data-open-screen="hours">التفاصيل ←</button></small></div><section class="panel" id="trip" aria-label="البحث عن الطريق">
+<label for="toPlace" class="destination-label">وين تبي تروح؟</label>
+<input id="toPlace" type="text" placeholder="مثلاً: كاديكوي، تقسيم، السلطان أحمد" dir="auto" autocomplete="off">
+<div class="origin-preview"><span>📍 البداية: <strong id="originText">موقعك الحالي</strong></span><button type="button" id="changeOrigin" aria-expanded="false">تغيير</button></div>
+<div id="originOptions" hidden><label for="fromPlace">نقطة الانطلاق (اختياري)</label><input id="fromPlace" type="text" placeholder="اتركها فارغة لموقعك الحالي" dir="auto"><button type="button" id="swapTrip" class="swap-button">⇄ بدّل الوجهة والانطلاق</button></div>
+<button type="button" id="planBtn">🚇 اعرض الطريق</button>
+<p class="plan-status" id="planStatus" role="status" aria-live="polite">عند البحث سنطلب إذن الموقع لتحديد أقرب محطة.</p>
+</section>
+<section class="home-more" aria-label="أدوات أخرى"><h2>تحتاج شيء ثاني؟</h2>
+<div class="home-tool-grid">
+<button type="button" class="home-tool" data-open-screen="nearby"><span>📍</span><b>أقرب محطة</b><small>من موقعي الآن</small></button>
+<button type="button" class="home-tool" data-open-screen="map"><span>🗺️</span><b>الخريطة</b><small>استكشف المحطات</small></button>
+<button type="button" class="home-tool" data-open-screen="hours"><span>🕒</span><b>المواعيد</b><small>ساعات التشغيل</small></button>
+</div><button type="button" class="home-resume" id="resumeTrip" data-open-screen="tracker" hidden>🚆 أكمل متابعة رحلتي السابقة <span>←</span></button></section></div><div class="app-screen" data-screen="results" id="screen-results"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>طريقك خطوة بخطوة</h2></div><button class="app-subtle-action" type="button" data-goto="home">✎ غيّر الوجهة أو موقع الانطلاق</button><div id="tripOut"></div></div><div class="app-screen" data-screen="nearby" id="screen-nearby"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>المحطات حولك</h2></div><div class="simple-nearby"><button type="button" class="locate-main" id="gpsBtn">📍 اعرض المحطات الأقرب لموقعي</button>
+<details><summary>أو ابحث قرب منطقة ثانية</summary>
+<div class="nearby-other"><input id="q" placeholder="اسم منطقة أو إحداثياتها" dir="auto"><button type="button" id="searchBtn">ابحث عن المحطات</button></div></details>
+<p id="version" hidden>الإصدار 23</p><div id="out"></div></div></div><div class="app-screen" data-screen="map" id="screen-map"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>خريطة السكك والمحطات</h2></div><section class="mapbox"><h2>🗺️ خريطة المحطات</h2><p class="mapnote">مرجع تفاعلي للمحطات. بعد حساب رحلة سيظهر تسلسل المحطات على شكل خط متقطع تقريبي، وليس مسار السكة الحقيقي. اضغط على الخريطة لاختيار وجهتك.</p><div id="map"></div><p class="mapnote">الخرائط © OpenStreetMap. عند تعذر تحميل بيانات الشبكة، تظهر قائمة احتياطية محدودة.</p></section><p><small>تُحمّل بيانات المحطات التشغيلية من مصدر GIS عند توفره، مع تخزين نسخة احتياطية على جهازك؛ وقد لا تعكس أحدث التغييرات. المسافات بخط مستقيم وليست مسار مشي فعلي. افتح خرائط Google للتأكد من الطريق ووقت المشي.</small></p></div><div class="app-screen" data-screen="tracker" id="screen-tracker"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>متابعة الرحلة</h2></div><div class="app-hint">حدّث محطتك يدوياً عند التوقف في كل محطة، ولا تعتمد على GPS داخل الأنفاق.</div><div id="trackerSlot"></div><button class="app-subtle-action" type="button" data-goto="results">↩ العودة إلى تفاصيل المسار</button></div><div class="app-screen" data-screen="hours" id="screen-hours"><div class="app-page-head"><p class="app-step-caption">مساعد تنقّل إسطنبول</p><h2>متى تعمل المواصلات؟</h2></div><section class="service-hours" aria-label="ساعات تشغيل النقل بالسكك">
 <div class="hours-head"><strong>🕘 ساعات تشغيل المواصلات</strong><span>بتوقيت إسطنبول</span></div>
 <div class="hours-main"><div><span>🚇 مترو إسطنبول</span><strong dir="ltr">06:00 – 00:00</strong></div><small>معظم الخطوط · تختلف أول وآخر رحلة حسب الخط والمحطة</small></div>
 <div class="hours-marmaray"><span>🚆 Marmaray</span><span>تختلف حسب المحطة والاتجاه · <a href="https://www.tcddtasimacilik.gov.tr/marmaray/tr/neredennereye" target="_blank" rel="noopener">جدول TCDD الرسمي ↗</a></span></div>
@@ -340,4 +390,4 @@ if(!accept(list,false))throw Error('Station dataset invalid');
 try{localStorage.setItem(cacheKey,JSON.stringify({stations:list,t:Date.now()}))}catch(e){}
 }).catch(e=>{if(stations.length<150)announce('🟠 قائمة محطات محدودة ('+stations.length+') · يرجى تأكيد المسار في Google Maps');else announce('📦 بيانات محطات محفوظة ('+stations.length+') · قد تكون قديمة')}).finally(()=>clearTimeout(timeout));
 })();
-</script><script src="rail-route-v18.js?v=22"></script><script src="app-nav-v22.js?v=22b"></script></body></html>
+</script><script src="rail-route-v18.js?v=23"></script><script src="app-nav-v23.js?v=23"></script></body></html>
