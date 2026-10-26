@@ -276,8 +276,7 @@ html+='<section class="rail-leg"><div class="rail-leg-top"><div class="rail-leg-
 '<div class="rail-direction">الاتجاه <b>'+safe(direction)+'</b></div>'+
 '<div class="rail-stops-compact"><div><span class="rail-dot green"></span><span>اركب <b>'+safe(step.start.stop)+'</b></span></div>'+
 '<div><span class="rail-dot red"></span><span>انزل <b>'+safe(step.end.stop)+'</b></span></div></div>'+
-'<details class="rail-station-details"><summary>عرض المحطات الوسيطة ('+Math.max(0,count-1)+')</summary>'+
-'<ol class="rail-station-list">'+stationTimeline(step,graph)+'</ol></details></section>';
+(count>1?'<details class="rail-station-details"><summary>عرض المحطات الوسيطة ('+(count-1)+')</summary><ol class="rail-station-list">'+stationTimeline(step,graph)+'</ol></details>':'')+'</section>';
 }
 html+='</div><div class="rail-walk rail-end-walk"><span>🏁 من '+safe(last.stop)+' إلى وجهتك</span>'+
 '<span>'+fmt(route.end.d)+' بخط مستقيم · <a target="_blank" rel="noopener" href="'+urlWalk(last.coord||destination,destination)+'">مسار المشي ↗</a></span></div>';
