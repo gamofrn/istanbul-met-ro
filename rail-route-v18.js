@@ -200,6 +200,56 @@ const sequence=[];
 for(let i=step.start.i;i!==step.end.i+inc;i+=inc){if(i<0||i>=stops.length)break;sequence.push(stops[i])}
 return sequence.map((name,i)=>'<li class="'+(i===0?'rail-board':i===sequence.length-1?'rail-alight':'')+'"><span class="rail-stop-num">'+(i+1)+'</span><span>'+safe(name)+'</span>'+(i===0?'<strong>اركب هنا</strong>':i===sequence.length-1?'<strong>انزل هنا</strong>':'')+'</li>').join('')
 }
+
+/* Manual in-train journey companion. All progress is user controlled: never infer station from GPS. */
+let rideState=null;
+const RIDE_KEY='istanbul-rail-ride-progress-v20';
+function saveRide(){try{if(rideState)localStorage.setItem(RIDE_KEY,JSON.stringify(rideState));else localStorage.removeItem(RIDE_KEY)}catch(e){}}
+function loadRide(){try{const r=JSON.parse(localStorage.getItem(RIDE_KEY)||'null');if(r&&Array.isArray(r.legs)&&r.legs.length&&Number.isInteger(r.leg)&&Number.isInteger(r.stop))return r}catch(e){}return null}
+function makeRide(steps,finish){
+const graph=getGraph();
+const legs=steps.filter(x=>x.type==='ride').map(step=>{
+const all=graph.lines[step.code]||[],inc=step.end.i>step.start.i?1:-1,stops=[];
+for(let i=step.start.i;i!==step.end.i+inc;i+=inc){if(i<0||i>=all.length)break;stops.push(all[i])}
+return {code:step.code,toward:all[inc>0?all.length-1:0],stops}
+}).filter(l=>l.stops.length>1);
+return {legs,leg:0,stop:0,finish:finish,finished:false,createdAt:Date.now()}
+}
+function rideBox(){
+const r=rideState;if(!r||!r.legs?.length)return '';
+if(r.finished)return '<div class="ride-tracker"><h3>🎉 وصلت! انتهت المتابعة</h3><button type="button" data-ride="close">إنهاء المتابعة</button></div>';
+const leg=r.legs[r.leg],last=leg.stops.length-1,remaining=last-r.stop,atEnd=remaining===0,final=r.leg===r.legs.length-1;
+const next=leg.stops[Math.min(r.stop+1,last)];
+let html='<section class="ride-tracker"><div class="ride-heading"><span>🚆 وضع داخل المترو</span><small>تحديث يدوي — بدون GPS</small></div>'+
+'<div class="ride-current">'+badge(leg.code)+' <span>باتجاه <b>'+safe(leg.toward)+'</b></span></div>'+
+'<div class="ride-mini">المحطة التي اخترتها</div><h3>'+safe(leg.stops[r.stop])+'</h3>'+
+'<div class="ride-mini">'+(atEnd?(final?'🏁 وصلت محطة النزول النهائية':'🔁 وصلت محطة التبديل'):'المحطة التالية: <strong>'+safe(next)+'</strong>')+'</div>'+
+'<div class="ride-progress"><span style="width:'+Math.round((r.stop+1)/leg.stops.length*100)+'%"></span></div>'+
+'<p class="ride-count">'+(atEnd?(final?'وصلت محطة الوصول — أكمل المشي إلى وجهتك':'انزل وتابع لوحات التحويل إلى الخط التالي'):remaining===1?'محطة واحدة باقية للنزول':remaining+' محطات باقية للنزول')+'</p>'+
+'<div class="ride-controls">';
+if(r.stop>0||r.leg>0)html+='<button type="button" class="ride-back" data-ride="back">↩ المحطة السابقة</button>';
+if(!atEnd)html+='<button type="button" data-ride="next">✓ وصلت المحطة التالية</button>';
+else if(!final){const nextLeg=r.legs[r.leg+1];html+='<button type="button" data-ride="transfer">🔁 بدّلت إلى '+safe(nextLeg.code)+' باتجاه '+safe(nextLeg.toward)+'</button>'}
+else html+='<button type="button" data-ride="finish">✅ أنهيت الرحلة</button>';
+html+='</div><details class="ride-select"><summary>📍 اختر محطتك يدوياً</summary><div class="ride-select-list">';
+leg.stops.forEach((st,i)=>{html+='<button type="button" data-ride="jump" data-index="'+i+'" '+(i===r.stop?'disabled':'')+'>'+safe(st)+(i===r.stop?' ✓':'')+'</button>'});
+html+='</div></details><p class="ride-disclaimer">المحطة الحالية يحددها ضغطك فقط، وليست متابعة مباشرة للقطار. تحقق من إعلانات المحطة الفعلية.</p></section>';
+return html
+}
+function renderRide(){
+const box=$('ridePanel');if(box)box.innerHTML=rideBox()
+}
+function handleRide(action,index){
+if(action==='close'){rideState=null;saveRide();const p=$('ridePanel');if(p)p.innerHTML='';return}
+const r=rideState;if(!r)return;
+const l=r.legs[r.leg];if(!l)return;
+if(action==='next'&&r.stop<l.stops.length-1)r.stop++;
+if(action==='back'){if(r.stop>0)r.stop--;else if(r.leg>0){r.leg--;r.stop=r.legs[r.leg].stops.length-1}}
+if(action==='transfer'&&r.stop===l.stops.length-1&&r.leg<r.legs.length-1){r.leg++;r.stop=0}
+if(action==='jump'&&Number.isInteger(index)&&index>=0&&index<l.stops.length)r.stop=index;
+if(action==='finish'&&r.leg===r.legs.length-1&&r.stop===l.stops.length-1)r.finished=true;
+saveRide();renderRide()
+}
 function routeMarkup(route,origin,destination){
 const graph=getGraph();
 const first=graph.nodes.get(route.path[0]),last=graph.nodes.get(route.path[route.path.length-1]);
@@ -227,6 +277,8 @@ html+='<div class="rail-segment">'+
 '</div>'
 }
 html+='<div class="rail-step rail-finish"><div class="rail-num">✓</div><div><strong>🎉 وصلت محطة '+safe(last.stop)+'</strong><p>تبقى المشي إلى الوجهة، والمسافة بخط مستقيم '+fmt(route.end.d)+'. '+(last.coord?'<a target="_blank" rel="noopener" href="'+urlWalk(last.coord,destination)+'">اتجاهات المشي الأخيرة ↗</a>':'')+'</p></div></div>';
+rideState=makeRide(steps,last.stop);
+html+='<div class="ride-start"><button type="button" id="rideStartBtn">🚆 ابدأ متابعة الرحلة داخل المترو</button><p>تتابع المحطات بضغط زر واحد. يمكنك الرجوع واختيار محطتك يدوياً.</p><div id="ridePanel"></div></div>';
 html+='<p class="rail-warning">⚠️ أسماء المحطات واتجاهات الخطوط مبنية على شبكة السكك المعروفة، لكن البيانات قد تتغير وقد توجد فروع أو تحويلات غير مغطاة. المدة تقريبية من نموذج حسابي يشمل أوقات انتظار تقديرية؛ ليست بيانات حية. المسافات خط مستقيم وليست وقت المشي الحقيقي. تأكد من خرائط Google ولوحات المحطات قبل الركوب.</p></section>';
 const points=route.path.map(id=>graph.nodes.get(id).coord).filter(Boolean);
 try{window.dispatchEvent(new CustomEvent('rail-route',{detail:{points}}))}catch(e){}
@@ -272,10 +324,18 @@ find.id='findClosestRail';find.type='button';find.textContent='📍 اعرف أ�
 orig.insertAdjacentElement('afterend',find);
 button.textContent='🚇 اعرض طريق المترو والتبديلات';
 button.onclick=plan; // Overrides old launcher without affecting independent station search.
+const tripArea=$('tripOut');
+tripArea.addEventListener('click',e=>{
+const click=e.target.closest?.('[data-ride], #rideStartBtn');if(!click)return;
+if(click.id==='rideStartBtn'){saveRide();renderRide();$('ridePanel')?.scrollIntoView?.({behavior:'smooth',block:'center'});return}
+const index=click.dataset?.index===undefined?-1:Number(click.dataset.index);
+handleRide(click.dataset.ride,index);
+});
+const saved=loadRide();if(saved){rideState=saved;const resume=document.createElement('div');resume.id='ridePanel';tripArea.appendChild(resume);renderRide();}
 const msg=document.createElement('p');msg.className='rail-tip';msg.textContent='يربط المحطات والتبديلات بالترتيب، ويفتح Google Maps للتحقق من أوقات الرحلة والمشي.';
 button.insertAdjacentElement('afterend',msg);
 window.addEventListener('stations-updated',()=>{networkGraph=null});
-if($('version'))$('version').textContent='الإصدار 19 · رحلة خطوة بخطوة';
+if($('version'))$('version').textContent='الإصدار 20 · وضع داخل المترو';
 }
 try{install()}catch(e){console.error('Rail planner failed',e)}
 })();
