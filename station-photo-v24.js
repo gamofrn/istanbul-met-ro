@@ -49,13 +49,14 @@ if(!original||t.length<3)return {kind:'unknown',title:'ما قدرت أقرأ ا
 if(!leg)return {kind:'unknown',title:'قرأت نص اللوحة، لكن ما عندي مسار أقارنه',body:'خطط رحلتك أولاً، ثم ارجع واختَر الخط المطلوب. تقدر أيضاً تقرأ الكلمات المستخرجة تحت.'};
 if(!manual&&Number.isFinite(confidence)&&confidence<35)return {kind:'unknown',title:'الكتابة غير واضحة بما يكفي للحكم',body:'الصورة غير واضحة لتحليل الاتجاه بثقة. أعد التصوير أو اكتب ما تقرؤه من اللوحة يدوياً.'};
 const correct=has(t,leg.toward),opposite=has(t,leg.opposite)||(leg.code==='M4'&&has(leg.toward,'Kadıköy')&&has(t,'Tavşantepe'));
+const oppositeName=has(t,leg.opposite)?leg.opposite:'Tavşantepe';
 const lineWord=leg.code==='B1'?'marmaray':leg.code;
 const line=has(t,lineWord);
 const transfer=has(t,'aktarma')||has(t,'transfer')||has(t,'aktarmalar');
 const exit=has(t,'cikis')||has(t,'exit');
 if(correct&&opposite)return {kind:'caution',title:'اللوحة تذكر الاتجاهين',body:'ابحث عن السهم المكتوب بجانب '+leg.toward+'، ثم تحقق من لوحة الرصيف. قراءة الكلمات وحدها لا تحدد أي ممر تختار.'};
 if(correct)return {kind:'positive',title:'اتجاه رحلتك مذكور في اللوحة',body:'وجدت '+leg.toward+(line?' مع '+lineWord:'')+'. اتبع السهم المرتبط بهذا الاسم، وتحقق من اتجاه القطار على الرصيف قبل الركوب. ما أقدر أحدد اليمين أو اليسار من النص وحده.'};
-if(opposite)return {kind:'caution',title:'انتبه: ظهر اسم الاتجاه المقابل',body:'اللوحة تذكر '+leg.opposite+'، بينما رحلتك تحتاج '+leg.toward+'. لا تعتمد على هذه اللوحة للركوب؛ ابحث عن الاتجاه المطلوب أو صوّر لوحة الرصيف بوضوح.'};
+if(opposite)return {kind:'caution',title:'انتبه: ظهر اسم الاتجاه المقابل',body:'اللوحة تذكر '+oppositeName+'، بينما رحلتك تحتاج '+leg.toward+'. لا تعتمد على هذه اللوحة للركوب؛ ابحث عن الاتجاه المطلوب أو صوّر لوحة الرصيف بوضوح.'};
 if(exit&&!transfer)return {kind:'caution',title:'هذه تبدو لوحة خروج',body:'ظهرت كلمة خروج أو Exit. إذا كنت داخل محطة تبديل، لا تتجه إلى الخارج إلا بعد التأكد من أن رحلة التبديل تتطلب ذلك. ابحث عن لوحات '+lineWord+' / '+leg.toward+'.'};
 if(line||transfer)return {kind:'caution',title:'ظهر خط أو تحويل، لكن الاتجاه غير واضح',body:'ابحث على اللوحات عن '+lineWord+' باتجاه '+leg.toward+'. صوّر لوحة الاتجاهات الأقرب أو اكتب الاسم الظاهر.'};
 return {kind:'unknown',title:'ما وجدت اسم الاتجاه المطلوب في النص المقروء',body:'رحلتك تحتاج '+lineWord+' باتجاه '+leg.toward+'. جرّب تصوير اسم الخط والوجهة النهائية بشكل أقرب. لا تفترض أن الاتجاه صحيح من هذه الصورة.'};
