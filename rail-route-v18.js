@@ -246,7 +246,10 @@ function stationTimeline(step,graph){
 const stops=graph.lines[step.code]||[];
 const inc=step.end.i>=step.start.i?1:-1;
 const sequence=[];
-for(let i=step.start.i;i!==step.end.i+inc;i+=inc){if(i<0||i>=stops.length)break;sequence.push(stops[i])}
+if(step.code==='T3'){
+const count=(step.end.i-step.start.i+stops.length)%stops.length;
+for(let n=0;n<=count;n++)sequence.push(stops[(step.start.i+n)%stops.length]);
+}else for(let i=step.start.i;i!==step.end.i+inc;i+=inc){if(i<0||i>=stops.length)break;sequence.push(stops[i])}
 return sequence.map((name,i)=>'<li class="'+(i===0?'rail-board':i===sequence.length-1?'rail-alight':'')+'"><span class="rail-stop-num">'+(i+1)+'</span><span>'+safe(name)+'</span>'+(i===0?'<strong>اركب هنا</strong>':i===sequence.length-1?'<strong>انزل هنا</strong>':'')+'</li>').join('')
 }
 
@@ -259,7 +262,10 @@ function makeRide(steps,finish){
 const graph=getGraph();
 const legs=steps.filter(x=>x.type==='ride').map(step=>{
 const all=graph.lines[step.code]||[],inc=step.end.i>step.start.i?1:-1,stops=[];
-for(let i=step.start.i;i!==step.end.i+inc;i+=inc){if(i<0||i>=all.length)break;stops.push(all[i])}
+if(step.code==='T3'){
+const count=(step.end.i-step.start.i+all.length)%all.length;
+for(let n=0;n<=count;n++)stops.push(all[(step.start.i+n)%all.length]);
+}else for(let i=step.start.i;i!==step.end.i+inc;i+=inc){if(i<0||i>=all.length)break;stops.push(all[i])}
 return {code:step.code,toward:all[inc>0?all.length-1:0],stops}
 }).filter(l=>l.stops.length>1);
 return {legs,leg:0,stop:0,finish:finish,finished:false,createdAt:Date.now()}
@@ -332,7 +338,7 @@ html+='<div class="rail-change"><span class="rail-change-symbol">↪</span><div>
 continue;
 }
 leg++;
-const arr=graph.lines[step.code]||[],direction=arr[step.end.i>step.start.i?arr.length-1:0]||'نهاية الخط';
+const arr=graph.lines[step.code]||[],direction=step.code==='T3'?'Kadıköy – Moda (اتجاه الحلقة)':arr[step.end.i>step.start.i?arr.length-1:0]||'نهاية الخط';
 const count=Math.abs(step.end.i-step.start.i);
 html+='<section class="rail-leg"><div class="rail-leg-top"><div class="rail-leg-line">'+badge(step.code)+'<strong>'+safe(prettyLine(step.code))+'</strong></div>'+
 '<span class="rail-leg-count">'+count+' '+(count===1?'محطة':'محطات')+'</span></div>'+
@@ -387,6 +393,7 @@ const [from,to]=await Promise.all([fromText?geocode(fromText):gps(),geocode(toTe
 if(!to){window.AppNav?.status('ما لقيت الوجهة بهذا الاسم. جرّب اسم الحي بالتركي أو الصق إحداثيات المكان.',true);return}
 if(!from){window.AppNav?.status('ما قدرت أحدد نقطة البداية. فعّل الموقع أو اضغط تغيير واكتب مكان الانطلاق.',true);return}
 const trackerSlot=$('trackerSlot');if(trackerSlot)trackerSlot.replaceChildren();
+rideState=null;
 try{localStorage.removeItem(RIDE_KEY)}catch(e){}
 if($('resumeTrip'))$('resumeTrip').hidden=true;
 const mode=$('routePreference')?.value||'balanced';
