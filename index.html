@@ -468,4 +468,4 @@ if(!accept(list,false))throw Error('Station dataset invalid');
 try{localStorage.setItem(cacheKey,JSON.stringify({stations:list,t:Date.now()}))}catch(e){}
 }).catch(e=>{if(stations.length<150)announce('🟠 قائمة محطات محدودة ('+stations.length+') · يرجى تأكيد المسار في Google Maps');else announce('📦 بيانات محطات محفوظة ('+stations.length+') · قد تكون قديمة')}).finally(()=>clearTimeout(timeout));
 })();
-</script><script src="rail-route-v18.js?v=24"></script><script src="app-nav-v23.js?v=24"></script><script src="station-photo-v24.js?v=24"></script></body></html>
+</script><script src="rail-route-v18.js?v=24b"></script><script src="app-nav-v23.js?v=24b"></script><script src="station-photo-v24.js?v=24b"></script></body></html>
