@@ -147,25 +147,47 @@ const d=dist(...point,...n.coord);if(d<=max)ids.set(n.id,{node:n,d})
 }}
 return [...ids.values()]
 }
-function shortest(from,to){
-const g=getGraph(),starts=stopCandidates(from,12,1900),ends=stopCandidates(to,12,1900);
-if(!starts.length||!ends.length)return {error:!starts.length?'لا توجد محطة قريبة معروفة من نقطة الانطلاق ضمن 1.9 كم بخط مستقيم.':'لا توجد محطة قريبة معروفة من الوجهة ضمن 1.9 كم بخط مستقيم.'};
+/* Optimize one trip with explicit trade-offs. Times are modeled, not live schedules.
+   Walking = straight-line approximation; transfer penalties include interchange walks. */
+const PREFERENCES={
+balanced:{walk:1.3,transfer:3.5,ride:1},
+fast:{walk:1,transfer:1.5,ride:1},
+fewTransfers:{walk:1.25,transfer:13,ride:1},
+lessWalking:{walk:3.25,transfer:2.5,ride:1}
+};
+function shortest(from,to,mode='balanced'){
+const preference=PREFERENCES[mode]||PREFERENCES.balanced;
+const g=getGraph(),starts=stopCandidates(from,18,2000),ends=stopCandidates(to,18,2000);
+if(!starts.length||!ends.length)return {error:!starts.length?'لا توجد محطة قريبة معروفة من نقطة الانطلاق ضمن 2 كم بخط مستقيم.':'لا توجد محطة قريبة معروفة من الوجهة ضمن 2 كم بخط مستقيم.'};
 const queue=[],best=new Map(),prev=new Map(),begin=new Map();
-for(const s of starts){const score=s.d/62+2;best.set(s.node.id,score);queue.push({id:s.node.id,cost:score});begin.set(s.node.id,s)}
-let winner=null,total=Infinity,ending=null;
+const walkCost=d=>(d/70)*preference.walk;
+for(const s of starts){
+const cost=walkCost(s.d)+2.5;
+best.set(s.node.id,cost);queue.push({id:s.node.id,cost});begin.set(s.node.id,s)
+}
+let winner=null,selected=Infinity,ending=null;
 while(queue.length){
-queue.sort((a,b)=>b.cost-a.cost);const cur=queue.pop();if(cur.cost!==best.get(cur.id))continue;
-for(const e of ends)if(e.node.id===cur.id){const c=cur.cost+e.d/62;
-if(c<total){winner=cur.id;total=c;ending=e}}
-if(cur.cost>total)break;
+queue.sort((a,b)=>b.cost-a.cost);
+const cur=queue.pop();if(cur.cost!==best.get(cur.id))continue;
+for(const e of ends)if(e.node.id===cur.id){
+const c=cur.cost+walkCost(e.d);
+if(c<selected){winner=cur.id;selected=c;ending=e}
+}
+if(cur.cost>selected)break;
 for(const edge of g.edges.get(cur.id)||[]){
-const cost=cur.cost+edge.cost;if(cost<(best.get(edge.to)??Infinity)){best.set(edge.to,cost);prev.set(edge.to,{id:cur.id,edge});begin.set(edge.to,begin.get(cur.id));queue.push({id:edge.to,cost})}}
+const weight=edge.type==='transfer'?edge.cost*preference.walk+preference.transfer:edge.cost*preference.ride;
+const cost=cur.cost+weight;
+if(cost<(best.get(edge.to)??Infinity)){
+best.set(edge.to,cost);prev.set(edge.to,{id:cur.id,edge});begin.set(edge.to,begin.get(cur.id));queue.push({id:edge.to,cost})
+}
+}
 }
 if(!winner)return {error:'لم أجد ربطاً واضحاً بين المحطات ضمن الخطوط المدعومة حالياً.'};
 const path=[winner],links=[];
 while(prev.has(path[0])){const p=prev.get(path[0]);links.unshift(p.edge);path.unshift(p.id)}
 const start=begin.get(winner);
-return {path,links,start,end:ending,total}
+const actualMinutes=start.d/70+ending.d/70+links.reduce((sum,e)=>sum+e.cost,0);
+return {path,links,start,end:ending,total:actualMinutes,score:selected,mode}
 }
 function parseCoords(text){
 const t=String(text).trim();
@@ -290,9 +312,10 @@ function routeMarkup(route,origin,destination){
 const graph=getGraph(),first=graph.nodes.get(route.path[0]),last=graph.nodes.get(route.path[route.path.length-1]);
 const steps=stepsFrom(route),rides=steps.filter(x=>x.type==='ride'),transfers=steps.filter(x=>x.type==='transfer').length;
 const [lo,hi]=journeyEstimate(route,steps);
+const scoreName={balanced:'متوازن',fast:'أقل وقت تقديري',fewTransfers:'أقل تبديلات',lessWalking:'أقل مسافة مشي تقريبية'}[route.mode]||'متوازن';
 let html='<section class="rail-result rail-result-clean">'+
 '<div class="rail-overview"><div><span class="rail-eyebrow">مسارك المقترح</span><h3>'+safe(first.stop)+' <span>←</span> '+safe(last.stop)+'</h3></div>'+
-'<div class="rail-overview-stats"><span>⏱️ '+lo+'–'+hi+' د تقريباً</span><span>🔁 '+transfers+' تبديل</span></div></div>'+
+'<div class="rail-overview-stats"><span>⏱️ '+lo+'–'+hi+' د تقريباً</span><span>🔁 '+transfers+' تبديل</span><span>⚖️ '+safe(scoreName)+'</span></div></div>'+
 '<div class="rail-walk"><span>🚶 البداية: <strong>'+safe(first.stop)+'</strong></span>'+
 '<span>'+fmt(route.start.d)+' بخط مستقيم · <a target="_blank" rel="noopener" href="'+urlWalk(origin,first.coord||origin)+'">مسار المشي ↗</a></span></div>'+
 '<div class="rail-guide">';
@@ -353,7 +376,8 @@ if(!from){window.AppNav?.status('ما قدرت أحدد نقطة البداية.
 const trackerSlot=$('trackerSlot');if(trackerSlot)trackerSlot.replaceChildren();
 try{localStorage.removeItem(RIDE_KEY)}catch(e){}
 if($('resumeTrip'))$('resumeTrip').hidden=true;
-const route=shortest(from,to);
+const mode=$('routePreference')?.value||'balanced';
+const route=shortest(from,to,mode);
 let body='';
 if(!route.error){
 const selected=getGraph().nodes.get(route.path[0]);
