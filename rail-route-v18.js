@@ -126,6 +126,10 @@ if(!nodes.has(idA)||!nodes.has(idB))return;
 edges.get(idA).push({to:idB,cost:minutes,type:'transfer'});
 edges.get(idB).push({to:idA,cost:minutes,type:'transfer'})
 }
+if(lines.T3){
+const last=lines.T3.length-1;
+edges.get('T3:'+last)?.push({to:'T3:0',cost:1.8,type:'ride',line:'T3'})
+}
 for(const t of TRANSFERS)connect(...t);
 return {nodes,edges,lines}
 }
@@ -346,6 +350,15 @@ const points=route.path.map(id=>graph.nodes.get(id).coord).filter(Boolean);
 try{window.dispatchEvent(new CustomEvent('rail-route',{detail:{points}}))}catch(e){}
 return html
 }
+function walkOnlyMarkup(route,from,to){
+const straight=dist(...from,...to);
+return '<section class="rail-result rail-result-clean">'+
+'<div class="rail-overview"><span class="rail-eyebrow">اقتراح الرحلة</span><h3>🚶 يمكن الوصول مشياً دون ركوب مترو</h3>'+
+'<div class="rail-overview-stats"><span>📍 '+fmt(straight)+' تقريبياً بخط مستقيم</span></div></div>'+
+'<p class="rail-tip">المحطات القريبة من البداية والنهاية متقاربة، لذلك لم يختر النظام أي قطار. قد يكون المشي أسهل؛ تحقّق من الطريق الفعلي قبل الانطلاق.</p>'+
+'<a class="rail-walk-alone" target="_blank" rel="noopener" href="'+urlWalk(from,to)+'">🚶 افتح طريق المشي الكامل في Google Maps ↗</a>'+
+'</section>'
+}
 function navLinks(from,to){
 const base='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(to)+'&travelmode=';
 const origin=from?'&origin='+encodeURIComponent(from):'';
@@ -379,12 +392,14 @@ if($('resumeTrip'))$('resumeTrip').hidden=true;
 const mode=$('routePreference')?.value||'balanced';
 const route=shortest(from,to,mode);
 let body='';
+if(/(^|\\s)(moda|مودا)/i.test(toText))body+='<div class="rail-note">⚠️ ترام T3 Kadıköy–Moda متوقف مؤقتاً منذ 19 أكتوبر 2026 لأعمال الصيانة، والمواصلات البديلة كهربائية على مسار مختلف. تحقق من إعلان Metro İstanbul.</div>';
+if(/(taksim\\s*[-–]\\s*tunel|t2|تونيل)/i.test(toText))body+='<div class="rail-note">⚠️ ترام T2 التاريخي معلن عنه تعليق حتى إشعار آخر؛ لم نتحقق من استئناف الخدمة. لا تعتمد عليه للرحلة.</div>';
 if(!route.error){
 const selected=getGraph().nodes.get(route.path[0]);
 const closest=pointCandidates(from,1,2200)[0];
 if(closest&&norm(closest.node.stop)!==norm(selected.stop))
 body+='<p class="rail-tip">💡 المحطة الأنسب للمسار '+safe(selected.stop)+'، لكنها قد لا تكون الأقرب مشياً.</p>';
-body+=routeMarkup(route,from,to);
+body+=route.links?.some(e=>e.type==='ride')?routeMarkup(route,from,to):walkOnlyMarkup(route,from,to);
 }else{
 body+='<div class="rail-note">⚠️ ما وجدنا مساراً موثوقاً بالسكك من النقطة المختارة في بياناتنا الحالية. هذا لا يعني عدم وجود مواصلات. '+safe(route.error)+'</div>';
 }
