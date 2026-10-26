@@ -304,27 +304,40 @@ setBusy('📍 أحدد موقعك الحالي وأبحث عن أقرب محطة
 try{const here=await gps();$('tripOut').innerHTML=nearestMarkup(here)+'<p class="rail-tip">اكتب وجهتك فوق، وبعدها اضغط «اعرض طريق المترو بالتبديلات».</p>'}catch(e){$('tripOut').innerHTML='<div class="rail-note">'+safe(e.message)+'</div>'}
 }
 async function plan(){
-const fromText=$('fromPlace').value.trim(),toText=$('toPlace').value.trim();
-if(!toText){setBusy('⚠️ اكتب المنطقة أو المكان اللي تبي تروح له.');return}
-setBusy('🧭 أحدد أقرب محطات الانطلاق والوجهة وأحسب التبديلات...');
+const fromText=$('fromPlace')?.value.trim()||'',toText=$('toPlace')?.value.trim()||'';
+const button=$('planBtn');
+if(!toText){window.AppNav?.status('اكتب وجهتك أولاً، مثل كاديكوي أو تقسيم.',true);$('toPlace')?.focus();return}
+if(button.disabled)return;
+button.disabled=true;button.textContent='⏳ جاري البحث عن الطريق...';
+window.AppNav?.status('أبحث عن المحطات المناسبة وخطوط التبديل...');
 try{
 const [from,to]=await Promise.all([fromText?geocode(fromText):gps(),geocode(toText)]);
-if(!from||!to){setBusy('⚠️ ما لقيت أحد المواقع. جرّب اسم الحي أو الإحداثيات، أو اضغط على الخريطة لتحديده.');return}
-const route=shortest(from,to),start=nearestMarkup(from);
-let body=start;
-if(!route.error){const selected=getGraph().nodes.get(route.path[0]);const closest=pointCandidates(from,1,2200)[0];if(closest&&norm(closest.node.stop)!==norm(selected.stop))body+='<p class="rail-tip">💡 اخترنا '+safe(selected.stop)+' كبداية للمسار لأن الرحلة منه أسهل حسب الخطوط والتبديلات، مع أنه ليس بالضرورة أقرب محطة جغرافياً.</p>';}
-if(route.error)body+='<div class="rail-note">⚠️ '+safe(route.error)+' لا يعني عدم وجود مواصلات أخرى. جرّب خرائط Google.</div>';
-else body+=routeMarkup(route,from,to);
+if(!to){window.AppNav?.status('ما لقيت الوجهة بهذا الاسم. جرّب اسم الحي بالتركي أو الصق إحداثيات المكان.',true);return}
+if(!from){window.AppNav?.status('ما قدرت أحدد نقطة البداية. فعّل الموقع أو اضغط تغيير واكتب مكان الانطلاق.',true);return}
+const route=shortest(from,to);
+let body='';
+if(!route.error){
+const selected=getGraph().nodes.get(route.path[0]);
+const closest=pointCandidates(from,1,2200)[0];
+if(closest&&norm(closest.node.stop)!==norm(selected.stop))
+body+='<p class="rail-tip">💡 المحطة الأنسب للمسار '+safe(selected.stop)+'، لكنها قد لا تكون الأقرب مشياً.</p>';
+body+=routeMarkup(route,from,to);
+}else{
+body+='<div class="rail-note">⚠️ ما وجدنا مساراً موثوقاً بالسكك من النقطة المختارة في بياناتنا الحالية. هذا لا يعني عدم وجود مواصلات. '+safe(route.error)+'</div>';
+}
 body+=navLinks(fromText||from.join(','),toText);
 $('tripOut').innerHTML=body;
-}catch(e){$('tripOut').innerHTML='<div class="rail-note">⚠️ '+safe(e.message)+'</div>'+navLinks(fromText,toText)}
+window.AppNav?.status('جاهز');
+window.AppNav?.go('results');
+}catch(e){
+window.AppNav?.status(e.message||'تعذر البحث حالياً. جرّب اسم حي آخر أو اكتب نقطة انطلاق.',true);
+}finally{
+button.disabled=false;button.textContent='🚇 اعرض الطريق';
+}
 }
 function install(){
 const button=$('planBtn');if(!button)return;
-const orig=$('fromPlace'),dest=$('toPlace');
-const find=document.createElement('button');
-find.id='findClosestRail';find.type='button';find.textContent='📍 اعرف أقرب محطة من موقعي';find.className='rail-geo';find.onclick=findNearest;
-orig.insertAdjacentElement('afterend',find);
+
 button.textContent='🚇 اعرض طريق المترو والتبديلات';
 button.onclick=plan; // Overrides old launcher without affecting independent station search.
 const tripArea=$('tripOut');
@@ -338,7 +351,7 @@ const saved=loadRide();if(saved){rideState=saved;const resume=document.createEle
 const msg=document.createElement('p');msg.className='rail-tip';msg.textContent='يربط المحطات والتبديلات بالترتيب، ويفتح Google Maps للتحقق من أوقات الرحلة والمشي.';
 button.insertAdjacentElement('afterend',msg);
 window.addEventListener('stations-updated',()=>{networkGraph=null});
-if($('version'))$('version').textContent='الإصدار 21 · رحلة مبسطة';
+if($('version'))$('version').textContent='الإصدار 23 · رحلة بسيطة';
 }
 try{install()}catch(e){console.error('Rail planner failed',e)}
 })();
