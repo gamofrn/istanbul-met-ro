@@ -186,20 +186,49 @@ else steps.push({type:'ride',code:a.line,start:a,end:b,count:1})
 }
 return steps
 }
-function routeMarkup(route,origin,destination){
-const g=getGraph(),startNode=g.nodes.get(route.path[0]),endNode=g.nodes.get(route.path[route.path.length-1]),steps=stepsFrom(route);
-const changeCount=steps.filter(s=>s.type==='transfer').length;
-let html='<section class="rail-result"><div class="rail-good">✅ وجدنا مساراً بالسكك بين المحطات القريبة</div><div class="rail-kpis"><span>🚇 '+steps.filter(s=>s.type==='ride').length+' خطوط</span><span>🔁 '+changeCount+' تبديل</span><span>🚶 '+fmt(route.start.d+route.end.d)+' تقريبياً بخط مستقيم</span></div>';
-html+='<div class="rail-step"><div class="rail-num">1</div><div><strong>ابدأ بالمشي إلى '+safe(startNode.stop)+'</strong><p>'+fmt(route.start.d)+' بخط مستقيم من نقطة الانطلاق '+(startNode.coord?'<a target="_blank" rel="noopener" href="'+urlWalk(origin,startNode.coord)+'">الطريق الفعلي للمحطة ↗</a>':'')+'</p></div></div>';
-let no=2;
-for(const s of steps){
-if(s.type==='transfer'){html+='<div class="rail-step"><div class="rail-num">'+(no++)+'</div><div><strong>🔁 بدّل من '+badge(s.a.line)+' إلى '+badge(s.b.line)+'</strong><p>عند '+safe(s.a.stop)+(norm(s.a.stop)!==norm(s.b.stop)?' ← '+safe(s.b.stop):'')+'. تأكد من لوحات التحويل في المحطة.</p></div></div>'}
-else{const dir=g.lines[s.code][s.end.i>s.start.i?g.lines[s.code].length-1:0];
-html+='<div class="rail-step"><div class="rail-num">'+(no++)+'</div><div><strong>اركب '+badge(s.code)+' باتجاه '+safe(dir)+'</strong><p>من <b>'+safe(s.start.stop)+'</b> إلى <b>'+safe(s.end.stop)+'</b> · '+s.count+' محطات</p></div></div>'}
+function prettyLine(code){return code==='B1'?'قطار Marmaray':code.startsWith('T')?'ترام '+code:code.startsWith('F')?'فونيكولار '+code:'مترو '+code}
+function round5(n){return Math.max(5,Math.round(n/5)*5)}
+function journeyEstimate(route,steps){
+const rides=steps.filter(x=>x.type==='ride').length;
+const base=route.total+rides*3.5; // Interchange penalties and modeled stop times already in total.
+return [round5(Math.max(5,base-7)),round5(base+7)]
 }
-html+='<div class="rail-step"><div class="rail-num">'+no+'</div><div><strong>انزل في '+safe(endNode.stop)+' وامشِ لوجهتك</strong><p>'+fmt(route.end.d)+' بخط مستقيم '+(endNode.coord?'<a target="_blank" rel="noopener" href="'+urlWalk(endNode.coord,destination)+'">المشي النهائي ↗</a>':'')+'</p></div></div>';
-html+='<p class="rail-warning">⚠️ هذا المسار يعتمد على ترتيب محطات الخطوط ونقاط التبديل المعروفة، وليس حركة القطارات المباشرة. المشي محسوب بخط مستقيم، وقد يكون أطول فعلياً. تحقق من أوقات التشغيل واتجاهات Google Maps قبل الانطلاق.</p></section>';
-const points=route.path.map(id=>g.nodes.get(id).coord).filter(Boolean);
+function stationTimeline(step,graph){
+const stops=graph.lines[step.code]||[];
+const inc=step.end.i>=step.start.i?1:-1;
+const sequence=[];
+for(let i=step.start.i;i!==step.end.i+inc;i+=inc){if(i<0||i>=stops.length)break;sequence.push(stops[i])}
+return sequence.map((name,i)=>'<li class="'+(i===0?'rail-board':i===sequence.length-1?'rail-alight':'')+'"><span class="rail-stop-num">'+(i+1)+'</span><span>'+safe(name)+'</span>'+(i===0?'<strong>اركب هنا</strong>':i===sequence.length-1?'<strong>انزل هنا</strong>':'')+'</li>').join('')
+}
+function routeMarkup(route,origin,destination){
+const graph=getGraph();
+const first=graph.nodes.get(route.path[0]),last=graph.nodes.get(route.path[route.path.length-1]);
+const steps=stepsFrom(route),rideCount=steps.filter(s=>s.type==='ride').length,transfers=steps.filter(s=>s.type==='transfer').length;
+const [low,high]=journeyEstimate(route,steps);
+let html='<section class="rail-result"><div class="rail-good">✅ طريق مقترح بالمترو والقطارات</div>'+
+'<div class="rail-journey-head"><div><span>⏳ المدة التقريبية</span><strong>'+low+'–'+high+' دقيقة</strong><small>تقدير حسابي، وليس موعداً حياً</small></div><div><span>🔁 التبديلات</span><strong>'+transfers+'</strong><small>'+rideCount+' وسيلة نقل بالسكك</small></div></div>'+
+'<div class="rail-kpis"><span>🚉 من '+safe(first.stop)+'</span><span>🏁 إلى '+safe(last.stop)+'</span><span>🚶 '+fmt(route.start.d+route.end.d)+' خط مستقيم إجمالاً</span></div>';
+html+='<div class="rail-step"><div class="rail-num">1</div><div><strong>📍 امشِ إلى محطة '+safe(first.stop)+'</strong><p>المسافة بخط مستقيم: '+fmt(route.start.d)+'. '+(first.coord?'<a target="_blank" rel="noopener" href="'+urlWalk(origin,first.coord)+'">اعرض المشي الفعلي ↗</a>':'')+'</p></div></div>';
+let no=2,rideIndex=0;
+for(const step of steps){
+if(step.type==='transfer'){
+html+='<div class="rail-transfer"><div class="rail-transfer-icon">🔁</div><div><strong>بدّل من '+badge(step.a.line)+' إلى '+badge(step.b.line)+'</strong><p>في محطة <b>'+safe(step.a.stop)+'</b>'+(norm(step.a.stop)!==norm(step.b.stop)?' باتجاه <b>'+safe(step.b.stop)+'</b>':'')+'. تابع لوحات التحويل داخل المحطة.</p></div></div>';
+continue
+}
+rideIndex++;
+const arr=graph.lines[step.code]||[];
+const toward=arr[step.end.i>step.start.i?arr.length-1:0]||'نهاية الخط';
+const count=Math.abs(step.end.i-step.start.i);
+const countLabel=count===1?'محطة واحدة':count===2?'محطتين':count+' محطات';
+html+='<div class="rail-segment">'+
+'<div class="rail-segment-title"><div class="rail-segment-heading"><span class="rail-segment-index">'+rideIndex+'</span><span>'+safe(prettyLine(step.code))+' '+badge(step.code)+'</span></div><div class="rail-toward">الاتجاه المكتوب على اللوحات: <strong>'+safe(toward)+'</strong></div></div>'+
+'<div class="rail-segment-points"><span>🟢 اركب: <b>'+safe(step.start.stop)+'</b></span><span>🔴 انزل: <b>'+safe(step.end.stop)+'</b></span></div>'+
+'<details class="rail-station-details" '+(count<=7?'open':'')+'><summary>🚉 '+countLabel+' — '+(count<=7?'إخفاء':'عرض')+' المحطات بالترتيب</summary><ol class="rail-station-list">'+stationTimeline(step,graph)+'</ol></details>'+
+'</div>'
+}
+html+='<div class="rail-step rail-finish"><div class="rail-num">✓</div><div><strong>🎉 وصلت محطة '+safe(last.stop)+'</strong><p>تبقى المشي إلى الوجهة، والمسافة بخط مستقيم '+fmt(route.end.d)+'. '+(last.coord?'<a target="_blank" rel="noopener" href="'+urlWalk(last.coord,destination)+'">اتجاهات المشي الأخيرة ↗</a>':'')+'</p></div></div>';
+html+='<p class="rail-warning">⚠️ أسماء المحطات واتجاهات الخطوط مبنية على شبكة السكك المعروفة، لكن البيانات قد تتغير وقد توجد فروع أو تحويلات غير مغطاة. المدة تقريبية من نموذج حسابي يشمل أوقات انتظار تقديرية؛ ليست بيانات حية. المسافات خط مستقيم وليست وقت المشي الحقيقي. تأكد من خرائط Google ولوحات المحطات قبل الركوب.</p></section>';
+const points=route.path.map(id=>graph.nodes.get(id).coord).filter(Boolean);
 try{window.dispatchEvent(new CustomEvent('rail-route',{detail:{points}}))}catch(e){}
 return html
 }
@@ -246,7 +275,7 @@ button.onclick=plan; // Overrides old launcher without affecting independent sta
 const msg=document.createElement('p');msg.className='rail-tip';msg.textContent='يربط المحطات والتبديلات بالترتيب، ويفتح Google Maps للتحقق من أوقات الرحلة والمشي.';
 button.insertAdjacentElement('afterend',msg);
 window.addEventListener('stations-updated',()=>{networkGraph=null});
-if($('version'))$('version').textContent='الإصدار 18 · تخطيط مسارات المترو';
+if($('version'))$('version').textContent='الإصدار 19 · رحلة خطوة بخطوة';
 }
 try{install()}catch(e){console.error('Rail planner failed',e)}
 })();
