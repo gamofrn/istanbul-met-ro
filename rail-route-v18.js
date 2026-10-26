@@ -33,7 +33,7 @@ const TRANSFERS=[
 ["M1A","Bakırköy-İncirli","M3","İncirli",7],["M1A","Yenibosna","M9","Yenibosna",6],
 ["M1A","Topkapı-Ulubatlı","T4","Vatan",11],["M1B","Topkapı-Ulubatlı","T4","Vatan",11],
 ["M3","Kirazlı-Bağcılar","M1B","Kirazlı-Bağcılar",5],["M3","Mahmutbey","M7","Mahmutbey",5],
-["M3","İkitelli Sanayi","M9","İkitelli Sanayi",5],["M7","Alibeyköy","T5","Alibeyköy Metro",5],
+["M3","İkitelli Sanayi","M9","İkitelli Sanayi",5],["M7","Alibeyköy","T5","Alibeyköy Metro",5],["M7","Karadeniz Mahallesi","T4","Kiptaş-Venezia",9],
 ["M4","Ayrılık Çeşmesi","B1","Ayrılık Çeşmesi",5],["M5","Üsküdar","B1","Üsküdar",5],
 ["M8","Bostancı","B1","Bostancı",5],["M4","Kozyatağı","M8","Kozyatağı",5],["M5","Dudullu","M8","Dudullu",6],
 ["T1","Sirkeci","B1","Sirkeci",7],["T1","Eminönü","T5","Eminönü",5],
@@ -224,10 +224,11 @@ const fromText=$('fromPlace').value.trim(),toText=$('toPlace').value.trim();
 if(!toText){setBusy('⚠️ اكتب المنطقة أو المكان اللي تبي تروح له.');return}
 setBusy('🧭 أحدد أقرب محطات الانطلاق والوجهة وأحسب التبديلات...');
 try{
-const [from,to]=await Promise.all([fromText?geocode(fromText):(gpsPoint?Promise.resolve(gpsPoint):gps()),geocode(toText)]);
+const [from,to]=await Promise.all([fromText?geocode(fromText):gps(),geocode(toText)]);
 if(!from||!to){setBusy('⚠️ ما لقيت أحد المواقع. جرّب اسم الحي أو الإحداثيات، أو اضغط على الخريطة لتحديده.');return}
 const route=shortest(from,to),start=nearestMarkup(from);
 let body=start;
+if(!route.error){const selected=getGraph().nodes.get(route.path[0]);const closest=pointCandidates(from,1,2200)[0];if(closest&&norm(closest.node.stop)!==norm(selected.stop))body+='<p class="rail-tip">💡 اخترنا '+safe(selected.stop)+' كبداية للمسار لأن الرحلة منه أسهل حسب الخطوط والتبديلات، مع أنه ليس بالضرورة أقرب محطة جغرافياً.</p>';}
 if(route.error)body+='<div class="rail-note">⚠️ '+safe(route.error)+' لا يعني عدم وجود مواصلات أخرى. جرّب خرائط Google.</div>';
 else body+=routeMarkup(route,from,to);
 body+=navLinks(fromText||from.join(','),toText);
