@@ -314,6 +314,9 @@ try{
 const [from,to]=await Promise.all([fromText?geocode(fromText):gps(),geocode(toText)]);
 if(!to){window.AppNav?.status('ما لقيت الوجهة بهذا الاسم. جرّب اسم الحي بالتركي أو الصق إحداثيات المكان.',true);return}
 if(!from){window.AppNav?.status('ما قدرت أحدد نقطة البداية. فعّل الموقع أو اضغط تغيير واكتب مكان الانطلاق.',true);return}
+const trackerSlot=$('trackerSlot');if(trackerSlot)trackerSlot.replaceChildren();
+try{localStorage.removeItem(RIDE_KEY)}catch(e){}
+if($('resumeTrip'))$('resumeTrip').hidden=true;
 const route=shortest(from,to);
 let body='';
 if(!route.error){
